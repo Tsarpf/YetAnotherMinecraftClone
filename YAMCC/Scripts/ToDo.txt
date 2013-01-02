@@ -1,0 +1,14 @@
+﻿Player block/chunk position is needed constantly. Make one script to stay updated on what they are. Maybe make it even trigger the scripts
+that need to execute when the player has moved to a new block/chunk.
+
+
+Check whether the main thread needs to access the WorldInitializer.chunkArray often,
+ since it's being locked by the moving infinite map it could be what is sometimes stutterin' up the game.
+
+
+If something sucks really bad, check if there are problems with integer divisions since most of chunkSize thingeys are now integers not floats.
+
+
+
+!!!Check if setting max threads to 4 improves performance, since then the unity/mainthread can use it's whole core
+to calculating unity stuff, and doesn't have to calculate other stuff because of having more threads than cores.
