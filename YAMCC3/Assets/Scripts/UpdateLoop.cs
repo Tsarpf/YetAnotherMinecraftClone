@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System;
 
 public class UpdateLoop : MonoBehaviour
 {
@@ -8,6 +9,7 @@ public class UpdateLoop : MonoBehaviour
 
     Vector3 playerStartPos;
     public static bool initLoadDone = false;
+    DateTime startTime;
 
     void Start()
     {
@@ -16,7 +18,7 @@ public class UpdateLoop : MonoBehaviour
             (CONST.chunkSize.y * CONST.worldChunkCount.y) / 2 + 1,
             (CONST.chunkSize.z * CONST.worldChunkCount.z) / 2);
 
-
+        startTime = DateTime.Now;
     }
     /*
     void OnDrawGizmos()
@@ -47,10 +49,14 @@ public class UpdateLoop : MonoBehaviour
             }
             checkForDestroys();
             initLoadDone = true;
+            DateTime end = DateTime.Now;
+            TimeSpan generationTime = end - startTime;
+            Debug.Log(generationTime);
         }
          
         if (initLoadDone)
         {
+            /*
             if(counter < CONST.framesBetweenMeshes)
             {
                 counter++;
@@ -60,6 +66,7 @@ public class UpdateLoop : MonoBehaviour
             {
                 counter = 0;
             }
+            */
             ChunkDrawDataArray chunkdrawdata = MeshGenerationQueue.GetFromQueue();
             if (chunkdrawdata != null)
             {

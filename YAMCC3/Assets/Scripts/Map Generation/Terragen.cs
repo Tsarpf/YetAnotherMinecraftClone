@@ -12,7 +12,7 @@ public static class TerraGen
     {
         int chunkX = chunk.chunkPosWorld.x;
         int chunkZ = chunk.chunkPosWorld.z;
-        Block[, ,] blocks = chunk.blocks;
+        //Block[, ,] blocks = chunk.blocks;
 
         ChunkNoise noise = new ChunkNoise(seed: CONST.worldSeed);
 
@@ -47,11 +47,13 @@ public static class TerraGen
 
                     if (blockWorldY < height - 3)
                     {
-                        blocks[localX, y, localZ].blockType = BlockType.Air;
+                        //blocks[localX, y, localZ].blockType = BlockType.Air;
+                        chunk.setBlock(localX, y, localZ, BlockType.Air);
                     }
                     else if (blockWorldY < height)
                     {
-                        blocks[localX, y, localZ].blockType = BlockType.Stone;
+                        //blocks[localX, y, localZ].blockType = BlockType.Stone;
+                        chunk.setBlock(localX, y, localZ, BlockType.Stone);
                     }
                     //if (blockWorldY >= height && blockWorldY < WorldGameObject.worldDepthBlocks)
                     else if (blockWorldY >= height)
@@ -59,11 +61,15 @@ public static class TerraGen
                         float noiseValue3D = noise.GetValue3D(worldX, blockWorldY, worldZ, octaves: 6, startFrequency: .05f, startAmplitude: 1);
                         if (noiseValue3D < -0.3)
                         {
-                            blocks[localX, y, localZ].blockType = BlockType.Dirt;
+                            //blocks[localX, y, localZ].blockType = BlockType.Dirt;
+                            chunk.setBlock(localX, y, localZ, BlockType.Dirt);
+
                         }
                         else
                         {
-                            blocks[localX, y, localZ].blockType = BlockType.Air;
+                            chunk.setBlock(localX, y, localZ, BlockType.Air);
+
+                            //blocks[localX, y, localZ].blockType = BlockType.Air;
                         }
                     }
                 }
@@ -71,21 +77,22 @@ public static class TerraGen
             }
         }
 
-        chunk.blocks = blocks;
-
+        //chunk.blocks = blocks;
+        
         for(int x = 0; x < chunkSizeX; x++)
         {
             for (int y = 0; y < chunkSizeY; y++)
             {
                 for (int z = 0; z < chunkSizeZ; z++)
                 {
-                    if(blocks[x,y,z].blockType != BlockType.Air)
+                    if(chunk.getBlock(x,y,z) != BlockType.Air)
                     {
                         chunk.anyNonAir = true;
                     }
                 }
             }
         }
+        
     }
 
 }

@@ -13,7 +13,7 @@ public class InfiniteWorld : MonoBehaviour
 
     static int3 worldChunkSize = CONST.worldChunkCount;
 
-    public static bool enabled = false;
+    //public static bool enabled = false;
 
     public static int3 ChunkWorldPositionOffset = new int3(0, 0, 0);
 
@@ -119,11 +119,13 @@ public class InfiniteWorld : MonoBehaviour
         //lock (WorldInitializer.chunkArray)
         //{
         List<Chunk> chunksToBeDrawn = new List<Chunk>();
-        chunksToBeDrawn.AddRange(xdirFunction(dir.x, ChunkWorldPositionOffset, WorldInitializer.chunkArray));
-        chunksToBeDrawn.AddRange(ydirFunction(dir.y, ChunkWorldPositionOffset, WorldInitializer.chunkArray));
-        chunksToBeDrawn.AddRange(zdirFunction(dir.z, ChunkWorldPositionOffset, WorldInitializer.chunkArray));
+        chunksToBeDrawn.AddRange(xdirFunction(dir.x, ChunkWorldPositionOffset));
+        chunksToBeDrawn.AddRange(ydirFunction(dir.y, ChunkWorldPositionOffset));
+        chunksToBeDrawn.AddRange(zdirFunction(dir.z, ChunkWorldPositionOffset));
         for(int i = 0; i < chunksToBeDrawn.Count; i++)
         {
+            //ThreadPool.QueueUserWorkItem(new WaitCallback(chunksToBeDrawn[i].AddChunkDrawdataToMeshQueue));
+
             chunksToBeDrawn[i].AddChunkDrawdataToMeshQueue();
         }
         //}
@@ -156,7 +158,7 @@ public class InfiniteWorld : MonoBehaviour
 
     }
     */
-    private static List<Chunk> xdirFunction(int xdir, int3 offset, Chunk[, ,] chunks)
+    private static List<Chunk> xdirFunction(int xdir, int3 offset)
     {
         List<Chunk> chunksToBeDrawn = new List<Chunk>();
         if (xdir >= 1)
@@ -172,24 +174,24 @@ public class InfiniteWorld : MonoBehaviour
                         {
                             if (x == 0)
                             {
-                                MeshGeneration.AddToRemoveQueue(WorldInitializer.chunkArray[x, y, z]);
+                                MeshGeneration.AddToRemoveQueue(WorldInitializer.getChunk(x, y, z));
                                 //ThreadPool.QueueUserWorkItem(new WaitCallback(WorldInitializer.chunkArray[x + 1, y, z].AddChunkDrawdataToMeshQueue));
 
                             }
-                            if (x == worldChunkSize.x - 1)
+                            else if (x == worldChunkSize.x - 1)
                             {
                                 int3 pos = new int3(x + ChunkWorldPositionOffset.x, y + ChunkWorldPositionOffset.y, z + ChunkWorldPositionOffset.z);
 
-                                WorldInitializer.chunkArray[x, y, z] = new Chunk(pos, offset);
-                                if (!WorldInitializer.chunkArray[x, y, z].anyNonAir) continue;
+                                WorldInitializer.setChunk(x, y, z, new Chunk(pos, offset));
+                                if (!WorldInitializer.getChunk(x, y, z).anyNonAir) continue;
+                                chunksToBeDrawn.Add(WorldInitializer.getChunk(x, y, z));
                                 //ThreadPool.QueueUserWorkItem(new WaitCallback(WorldInitializer.chunkArray[x, y, z].AddChunkDrawdataToMeshQueue));
-                                chunksToBeDrawn.Add(WorldInitializer.chunkArray[x, y, z]);
                                 //WorldInitializer.chunkArray[x, y, z].AddChunkDrawdataToMeshQueue();
                                 //////ThreadPool.QueueUserWorkItem(new WaitCallback(WorldInitializer.chunkArray[x - 1, y, z].AddChunkDrawdataToMeshQueue));
                             }
                             else
                             {
-                                chunks[x, y, z] = chunks[x + 1, y, z];
+                                WorldInitializer.setChunk(x, y, z, WorldInitializer.getChunk(x + 1, y, z));
                             }
                             /*
                             //newstuff after this
@@ -219,23 +221,27 @@ public class InfiniteWorld : MonoBehaviour
                         {
                             if (x == (worldChunkSize.x - 1))
                             {
-                                MeshGeneration.AddToRemoveQueue(WorldInitializer.chunkArray[x, y, z]);
+                                //MeshGeneration.AddToRemoveQueue(WorldInitializer.chunkArray[x, y, z]);
+                                MeshGeneration.AddToRemoveQueue(WorldInitializer.getChunk(x, y, z));
+
 
                                 //ThreadPool.QueueUserWorkItem(new WaitCallback(WorldInitializer.chunkArray[x - 1, y, z].AddChunkDrawdataToMeshQueue));
                             }
-                            if (x == 0)
+                            else if (x == 0)
                             {
                                 int3 pos = new int3(x + ChunkWorldPositionOffset.x, y + ChunkWorldPositionOffset.y, z + ChunkWorldPositionOffset.z);
-                                WorldInitializer.chunkArray[x, y, z] = new Chunk(pos, offset);
-                                if (!WorldInitializer.chunkArray[x, y, z].anyNonAir) continue;
-                                chunksToBeDrawn.Add(WorldInitializer.chunkArray[x, y, z]);
+                                WorldInitializer.setChunk(x, y, z, new Chunk(pos, offset));
+                                if (!WorldInitializer.getChunk(x, y, z).anyNonAir) continue;
+                                chunksToBeDrawn.Add(WorldInitializer.getChunk(x, y, z));
                                 //ThreadPool.QueueUserWorkItem(new WaitCallback(WorldInitializer.chunkArray[x, y, z].AddChunkDrawdataToMeshQueue));
                                 //ThreadPool.QueueUserWorkItem(new WaitCallback(WorldInitializer.chunkArray[x + 1, y, z].AddChunkDrawdataToMeshQueue));
 
                             }
                             else
                             {
-                                chunks[x, y, z] = chunks[x - 1, y, z];
+                                //chunks[x, y, z] = chunks[x - 1, y, z];
+                                WorldInitializer.setChunk(x, y, z, WorldInitializer.getChunk(x - 1, y, z));
+
                             }
                         }
                     }
@@ -245,7 +251,7 @@ public class InfiniteWorld : MonoBehaviour
         return chunksToBeDrawn;
     }
 
-    private static List<Chunk> ydirFunction(int ydir, int3 offset, Chunk[, ,] chunks)
+    private static List<Chunk> ydirFunction(int ydir, int3 offset)
     {
         List<Chunk> chunksToBeDrawn = new List<Chunk>();
         if (ydir >= 1)
@@ -261,18 +267,20 @@ public class InfiniteWorld : MonoBehaviour
                         {
                             if (y == 0)
                             {
-                                MeshGeneration.AddToRemoveQueue(WorldInitializer.chunkArray[x, y, z]);
+                                //MeshGeneration.AddToRemoveQueue(WorldInitializer.chunkArray[x, y, z]);
+                                MeshGeneration.AddToRemoveQueue(WorldInitializer.getChunk(x, y, z));
+
 
                                 //ThreadPool.QueueUserWorkItem(new WaitCallback(WorldInitializer.chunkArray[x, y + 1, z].AddChunkDrawdataToMeshQueue));
 
                             }
-                            if (y == worldChunkSize.y - 1)
+                            else if (y == worldChunkSize.y - 1)
                             {
                                 int3 pos = new int3(x + ChunkWorldPositionOffset.x, y + ChunkWorldPositionOffset.y, z + ChunkWorldPositionOffset.z);
 
-                                WorldInitializer.chunkArray[x, y, z] = new Chunk(pos, offset);
-                                if (!WorldInitializer.chunkArray[x, y, z].anyNonAir) continue;
-                                chunksToBeDrawn.Add(WorldInitializer.chunkArray[x, y, z]);
+                                WorldInitializer.setChunk(x, y, z, new Chunk(pos, offset));
+                                if (!WorldInitializer.getChunk(x, y, z).anyNonAir) continue;
+                                chunksToBeDrawn.Add(WorldInitializer.getChunk(x, y, z));
                                 //ThreadPool.QueueUserWorkItem(new WaitCallback(WorldInitializer.chunkArray[x, y, z].AddChunkDrawdataToMeshQueue));
                                 //WorldInitializer.chunkArray[x, y, z].AddChunkDrawdataToMeshQueue();
 
@@ -281,7 +289,8 @@ public class InfiniteWorld : MonoBehaviour
                             }
                             else
                             {
-                                chunks[x, y, z] = chunks[x, y + 1, z];
+                                //chunks[x, y, z] = chunks[x, y + 1, z];
+                                WorldInitializer.setChunk(x, y, z, WorldInitializer.getChunk(x, y + 1, z));
                             }
                         }
                     }
@@ -302,16 +311,18 @@ public class InfiniteWorld : MonoBehaviour
                         {
                             if (y == (worldChunkSize.y - 1))
                             {
-                                MeshGeneration.AddToRemoveQueue(WorldInitializer.chunkArray[x, y, z]);
+                                //MeshGeneration.AddToRemoveQueue(WorldInitializer.chunkArray[x, y, z]);
+                                MeshGeneration.AddToRemoveQueue(WorldInitializer.getChunk(x, y, z));
+
                                 //ThreadPool.QueueUserWorkItem(new WaitCallback(WorldInitializer.chunkArray[x, y - 1, z].AddChunkDrawdataToMeshQueue));
 
                             }
-                            if (y == 0)
+                            else if (y == 0)
                             {
                                 int3 pos = new int3(x + ChunkWorldPositionOffset.x, y + ChunkWorldPositionOffset.y, z + ChunkWorldPositionOffset.z);
-                                WorldInitializer.chunkArray[x, y, z] = new Chunk(pos, offset);
-                                if (!WorldInitializer.chunkArray[x, y, z].anyNonAir) continue;
-                                chunksToBeDrawn.Add(WorldInitializer.chunkArray[x, y, z]);
+                                WorldInitializer.setChunk(x, y, z, new Chunk(pos, offset));
+                                if (!WorldInitializer.getChunk(x, y, z).anyNonAir) continue;
+                                chunksToBeDrawn.Add(WorldInitializer.getChunk(x, y, z));
                                 //ThreadPool.QueueUserWorkItem(new WaitCallback(WorldInitializer.chunkArray[x, y, z].AddChunkDrawdataToMeshQueue));
                                 //WorldInitializer.chunkArray[x, y, z].AddChunkDrawdataToMeshQueue();
 
@@ -320,7 +331,8 @@ public class InfiniteWorld : MonoBehaviour
                             }
                             else
                             {
-                                chunks[x, y, z] = chunks[x, y - 1, z];
+                                //chunks[x, y, z] = chunks[x, y - 1, z];
+                                WorldInitializer.setChunk(x, y, z, WorldInitializer.getChunk(x, y - 1, z));
                             }
                         }
                     }
@@ -330,7 +342,7 @@ public class InfiniteWorld : MonoBehaviour
         return chunksToBeDrawn;
     }
 
-    private static List<Chunk> zdirFunction(int zdir, int3 offset, Chunk[, ,] chunks)
+    private static List<Chunk> zdirFunction(int zdir, int3 offset)
     {
         List<Chunk> chunksToBeDrawn = new List<Chunk>();
         if (zdir >= 1)
@@ -346,17 +358,19 @@ public class InfiniteWorld : MonoBehaviour
                         {
                             if (z == 0)
                             {
-                                MeshGeneration.AddToRemoveQueue(WorldInitializer.chunkArray[x, y, z]);
+                                //MeshGeneration.AddToRemoveQueue(WorldInitializer.chunkArray[x, y, z]);
+                                MeshGeneration.AddToRemoveQueue(WorldInitializer.getChunk(x, y, z));
+
                                 //ThreadPool.QueueUserWorkItem(new WaitCallback(WorldInitializer.chunkArray[x, y, z + 1].AddChunkDrawdataToMeshQueue));
 
                             }
-                            if (z == worldChunkSize.z - 1)
+                            else if (z == worldChunkSize.z - 1)
                             {
                                 int3 pos = new int3(x + ChunkWorldPositionOffset.x, y + ChunkWorldPositionOffset.y, z + ChunkWorldPositionOffset.z);
 
-                                WorldInitializer.chunkArray[x, y, z] = new Chunk(pos, offset);
-                                if (!WorldInitializer.chunkArray[x, y, z].anyNonAir) continue;
-                                chunksToBeDrawn.Add(WorldInitializer.chunkArray[x, y, z]);
+                                WorldInitializer.setChunk(x, y, z, new Chunk(pos, offset));
+                                if (!WorldInitializer.getChunk(x, y, z).anyNonAir) continue;
+                                chunksToBeDrawn.Add(WorldInitializer.getChunk(x, y, z));
 
                                 //ThreadPool.QueueUserWorkItem(new WaitCallback(WorldInitializer.chunkArray[x, y, z].AddChunkDrawdataToMeshQueue));
 
@@ -364,7 +378,8 @@ public class InfiniteWorld : MonoBehaviour
                             }
                             else
                             {
-                                chunks[x, y, z] = chunks[x, y, z + 1];
+                                //chunks[x, y, z] = chunks[x, y, z + 1];
+                                WorldInitializer.setChunk(x, y, z, WorldInitializer.getChunk(x, y, z + 1));
                             }
                         }
                     }
@@ -385,24 +400,27 @@ public class InfiniteWorld : MonoBehaviour
                         {
                             if (z == (worldChunkSize.z - 1))
                             {
-                                MeshGeneration.AddToRemoveQueue(WorldInitializer.chunkArray[x, y, z]);
+                                //MeshGeneration.AddToRemoveQueue(WorldInitializer.chunkArray[x, y, z]);
+                                MeshGeneration.AddToRemoveQueue(WorldInitializer.getChunk(x, y, z));
+
 
                                 //ThreadPool.QueueUserWorkItem(new WaitCallback(WorldInitializer.chunkArray[x, y, z - 1].AddChunkDrawdataToMeshQueue));
 
                             }
-                            if (z == 0)
+                            else if (z == 0)
                             {
                                 int3 pos = new int3(x + ChunkWorldPositionOffset.x, y + ChunkWorldPositionOffset.y, z + ChunkWorldPositionOffset.z);
-                                WorldInitializer.chunkArray[x, y, z] = new Chunk(pos, offset);
-                                if (!WorldInitializer.chunkArray[x, y, z].anyNonAir) continue;
-                                chunksToBeDrawn.Add(WorldInitializer.chunkArray[x, y, z]);
+                                WorldInitializer.setChunk(x, y, z, new Chunk(pos, offset));
+                                if (!WorldInitializer.getChunk(x, y, z).anyNonAir) continue;
+                                chunksToBeDrawn.Add(WorldInitializer.getChunk(x, y, z));
                                 //ThreadPool.QueueUserWorkItem(new WaitCallback(WorldInitializer.chunkArray[x, y, z].AddChunkDrawdataToMeshQueue));
                                 //ThreadPool.QueueUserWorkItem(new WaitCallback(WorldInitializer.chunkArray[x, y, z + 1].AddChunkDrawdataToMeshQueue));
 
                             }
                             else
                             {
-                                chunks[x, y, z] = chunks[x, y, z - 1];
+                                //chunks[x, y, z] = chunks[x, y, z - 1];
+                                WorldInitializer.setChunk(x, y, z, WorldInitializer.getChunk(x, y, z -1));
                             }
                         }
                     }

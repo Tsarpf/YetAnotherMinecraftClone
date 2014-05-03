@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-
+/*
 public struct Block
 {
     public BlockType blockType;
@@ -12,7 +12,7 @@ public struct Block
         blockType = blocktype;
     }
 }
-
+*/
 public enum BlockSide : byte
 {
     Top = 0,

@@ -12,7 +12,7 @@ public class Chunk
     public Vector3 blockOffset;
     int3 chunkOffset;
 
-    public Block[, ,] blocks;
+    public BlockType[] blocksArray;
 
     public GameObject chunk;
 
@@ -24,6 +24,21 @@ public class Chunk
     public bool anyNonAir = false;
 
     public static Dictionary<int, Dictionary<BlockType, Vector2>> UVLookUp;
+
+    public BlockType getBlock(int x, int y, int z)
+    {
+        return blocksArray[getBlockIdx(x, y, z)];
+    }
+
+    public void setBlock(int x, int y, int z, BlockType block)
+    {
+        blocksArray[getBlockIdx(x, y, z)] = block;
+    }
+
+    private int getBlockIdx(int x, int y, int z)
+    {
+        return x + CONST.chunkSize.x * (y + CONST.chunkSize.y * z);
+    }
 
     bool firstRun = true;
     //Get the block positions and stuff here. Do not draw them yet though.
@@ -41,7 +56,7 @@ public class Chunk
         //Debug.Log(cvhdhsdv.x + " " + cvhdhsdv.y + " " + cvhdhsdv.z);
         //Debug.Log(CONST.chunkSize.x + " " + CONST.chunkSize.y + " " + CONST.chunkSize.z);
 
-        blocks = new Block[CONST.chunkSize.x, CONST.chunkSize.y, CONST.chunkSize.z];
+        blocksArray = new BlockType[CONST.chunkSize.x * CONST.chunkSize.y * CONST.chunkSize.z];
 
         //Call the terrain generator. Terrain generator simply tells what blocktypes to put and where.
         //GenericChunkGen.GenerateChunk(this);
@@ -64,20 +79,21 @@ public class Chunk
         //Debug.Log(cvhdhsdv.x + " " + cvhdhsdv.y + " " + cvhdhsdv.z);
         //Debug.Log(CONST.chunkSize.x + " " + CONST.chunkSize.y + " " + CONST.chunkSize.z);
 
-        blocks = new Block[CONST.chunkSize.x, CONST.chunkSize.y, CONST.chunkSize.z];
+        blocksArray = new BlockType[CONST.chunkSize.x * CONST.chunkSize.y * CONST.chunkSize.z];
 
         //Call the terrain generator. Terrain generator simply tells what blocktypes to put and where.
         //GenericChunkGen.GenerateChunk(this);
         TerraGen.CreateLandscape(this);
     }
-
+    
     public void AddChunkDrawdataToMeshQueue(System.Object stateInfo)
     {
         int3 chunkSize = CONST.chunkSize;
 
-        ChunkDrawData chunkDrawData = new ChunkDrawData(new List<Vector3>(), new List<int>(), new List<Vector2>(),this);
+        ChunkDrawData chunkDrawData = new ChunkDrawData(new List<Vector3>(), new List<int>(), new List<Vector2>(), this);
 
         int offset = 0;
+
         BlockDrawInfo drawData;
         for (int x = 0; x < chunkSize.x; x++)
         {
@@ -85,7 +101,7 @@ public class Chunk
             {
                 for (int z = 0; z < chunkSize.z; z++)
                 {
-                    if (blocks[x, y, z].blockType != BlockType.Air)
+                    if (getBlock(x, y, z) != BlockType.Air)
                     {
 
 
@@ -114,7 +130,7 @@ public class Chunk
 
         MeshGenerationQueue.AddToQueue(cdda);
     }
-
+    
     public void AddChunkDrawdataToMeshQueue()
     {
 
@@ -131,7 +147,7 @@ public class Chunk
             {
                 for (int z = 0; z < chunkSize.z; z++)
                 {
-                    if (blocks[x, y, z].blockType != BlockType.Air)
+                    if (getBlock(x, y, z) != BlockType.Air)
                     {
 
 
@@ -172,17 +188,18 @@ public class Chunk
         //Profiler.BeginSample("grasscheck");
         if (firstRun)
         {
-            if (blocks[x, y, z].blockType == BlockType.Dirt)
+            if (getBlock(x, y, z) == BlockType.Dirt)
             {
                 if (neighbours[(int)Neighbour.Y_plus] == BlockType.Air)
                 {
-                    blocks[x, y, z].blockType = BlockType.Grass;
+                    //blocks[x, y, z].blockType = BlockType.Grass;
+                    setBlock(x, y, z, BlockType.Grass);
                 }
             }
         }
         //Profiler.EndSample();
         //Profiler.BeginSample("UVs");
-        BlockType asd = blocks[x, y, z].blockType;
+        BlockType current = getBlock(x, y, z);
 
         //Profiler.EndSample();
 
@@ -236,10 +253,10 @@ public class Chunk
                 blockVertexList.Add(vertsDrawPos[2]);
                 blockVertexList.Add(vertsDrawPos[3]);
 
-                blockUVList.Add(getUVs(0,asd));
-                blockUVList.Add(getUVs(1,asd));
-                blockUVList.Add(getUVs(2,asd));
-                blockUVList.Add(getUVs(3,asd));
+                blockUVList.Add(getUVs(0,current));
+                blockUVList.Add(getUVs(1,current));
+                blockUVList.Add(getUVs(2,current));
+                blockUVList.Add(getUVs(3,current));
 
                 blockTriangleList.Add(3 + triangleIndex);
                 blockTriangleList.Add(1 + triangleIndex);
@@ -259,10 +276,10 @@ public class Chunk
                 blockVertexList.Add(vertsDrawPos[22]);
                 blockVertexList.Add(vertsDrawPos[23]);
 
-                blockUVList.Add(getUVs(20,asd));
-                blockUVList.Add(getUVs(21,asd));
-                blockUVList.Add(getUVs(22,asd));
-                blockUVList.Add(getUVs(23,asd));
+                blockUVList.Add(getUVs(20,current));
+                blockUVList.Add(getUVs(21,current));
+                blockUVList.Add(getUVs(22,current));
+                blockUVList.Add(getUVs(23,current));
 
                 blockTriangleList.Add(3 + triangleIndex);
                 blockTriangleList.Add(1 + triangleIndex);
@@ -282,10 +299,10 @@ public class Chunk
                 blockVertexList.Add(vertsDrawPos[10]);
                 blockVertexList.Add(vertsDrawPos[11]);
 
-                blockUVList.Add(getUVs(8,asd));
-                blockUVList.Add(getUVs(9,asd));
-                blockUVList.Add(getUVs(10,asd));
-                blockUVList.Add(getUVs(11,asd));
+                blockUVList.Add(getUVs(8,current));
+                blockUVList.Add(getUVs(9,current));
+                blockUVList.Add(getUVs(10,current));
+                blockUVList.Add(getUVs(11,current));
 
                 blockTriangleList.Add(3 + triangleIndex);
                 blockTriangleList.Add(1 + triangleIndex);
@@ -305,10 +322,10 @@ public class Chunk
                 blockVertexList.Add(vertsDrawPos[6]);
                 blockVertexList.Add(vertsDrawPos[7]);
 
-                blockUVList.Add(getUVs(4,asd));
-                blockUVList.Add(getUVs(5,asd));
-                blockUVList.Add(getUVs(6,asd));
-                blockUVList.Add(getUVs(7,asd));
+                blockUVList.Add(getUVs(4,current));
+                blockUVList.Add(getUVs(5,current));
+                blockUVList.Add(getUVs(6,current));
+                blockUVList.Add(getUVs(7,current));
 
 
                 blockTriangleList.Add(0 + triangleIndex);
@@ -329,10 +346,10 @@ public class Chunk
                 blockVertexList.Add(vertsDrawPos[18]);
                 blockVertexList.Add(vertsDrawPos[19]);
 
-                blockUVList.Add(getUVs(16,asd));
-                blockUVList.Add(getUVs(17,asd));
-                blockUVList.Add(getUVs(18,asd));
-                blockUVList.Add(getUVs(19,asd));
+                blockUVList.Add(getUVs(16,current));
+                blockUVList.Add(getUVs(17,current));
+                blockUVList.Add(getUVs(18,current));
+                blockUVList.Add(getUVs(19,current));
 
 
                 blockTriangleList.Add(0 + triangleIndex);
@@ -353,10 +370,10 @@ public class Chunk
                 blockVertexList.Add(vertsDrawPos[14]);
                 blockVertexList.Add(vertsDrawPos[15]);
 
-                blockUVList.Add(getUVs(12,asd));
-                blockUVList.Add(getUVs(13,asd));
-                blockUVList.Add(getUVs(14,asd));
-                blockUVList.Add(getUVs(15,asd));
+                blockUVList.Add(getUVs(12,current));
+                blockUVList.Add(getUVs(13,current));
+                blockUVList.Add(getUVs(14,current));
+                blockUVList.Add(getUVs(15,current));
 
 
                 blockTriangleList.Add(3 + triangleIndex);
@@ -380,7 +397,7 @@ public class Chunk
         return new BlockDrawInfo(blockVertexList, blockUVList, blockTriangleList, triangleIndex);
 
     }
-
+    /*
     public void getCollisionMeshRectanglesForFace()
     {
         /*
@@ -424,7 +441,7 @@ public class Chunk
                 tileNeedsChecking[i, j] = true;
             }
         }
-        */
+     
         bool[,] tileNeedsChecking = new bool[CONST.chunkSize.x, CONST.chunkSize.y];
         for (int i = 0; i < CONST.chunkSize.x; i++)
         {
@@ -505,7 +522,8 @@ public class Chunk
     faceFinished: ;
 
     }
-
+    */
+    /*
     private Vector2 findNextTile(bool[,] tiles)
     {
         for (int x = 0; x < tiles.GetLength(0); x++)
@@ -521,59 +539,7 @@ public class Chunk
         //Return [-1,-1] if all indexes are false;
         return new Vector2(-1, -1);
     }
-    /*
-    private Vector2[] getUVs(BlockType blockType)
-    {
-
-        //int asdf = 0;
-        //Rect[] atlasUVs = WorldInitializer.atlasUVs;
-        Vector2[] vertsUV = new Vector2[24];
-        //float epsilon = 0.01f;
-        //if (blockType != BlockType.Air)
-        //{
-        vertsUV[0] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);         // Front
-        vertsUV[1] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);
-        vertsUV[2] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
-        vertsUV[3] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
-
-        vertsUV[4] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);    // Left
-        vertsUV[5] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);
-        vertsUV[6] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
-        vertsUV[7] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
-
-        vertsUV[8] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);    // Right
-        vertsUV[9] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);
-        vertsUV[10] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
-        vertsUV[11] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
-
-
-        vertsUV[12] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].yMin);   // Top
-        vertsUV[13] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].xMax, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].yMin);
-        vertsUV[14] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].yMax);
-        vertsUV[15] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].xMax, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].yMax);
-
-
-        vertsUV[16] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Bottom].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Bottom].yMin);   // Bottom
-        vertsUV[17] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Bottom].xMax, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Bottom].yMin);
-        vertsUV[18] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Bottom].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Bottom].yMax);
-        vertsUV[19] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Bottom].xMax, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Bottom].yMax);
-
-        vertsUV[20] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);   // Back
-        vertsUV[21] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);
-        vertsUV[22] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
-        vertsUV[23] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
-        // }
-        return vertsUV;
-    }
     */
-    /*
-    static Vector2[] UVs = new Vector2[24]
-    {
-        Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax - 0.01f, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax),
-        Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);
-    }
-*/
-
     private Vector2 getUVs(int idx, BlockType blockType)
     {
         return UVLookUp[idx][blockType];
@@ -697,14 +663,15 @@ public class Chunk
         //Xminus
         if (x - 1 >= 0)
         {
-            x_minus = blocks[x - 1, y, z].blockType;
+            //x_minus = blocks[x - 1, y, z].blockType;
+            x_minus = getBlock(x - 1, y, z);
         }
         else
         {
             key = new int3(arrayBasedChunkPos.x - 1, arrayBasedChunkPos.y, arrayBasedChunkPos.z);
             if (WorldInitializer.chunkArrayContainsKey(key))
             {
-                x_minus = WorldInitializer.chunkArray[key.x, key.y, key.z].blocks[CONST.chunkSize.x - 1, y, z].blockType;
+                x_minus = WorldInitializer.getChunk(key.x, key.y, key.z).getBlock(CONST.chunkSize.x - 1, y, z);
             }
             else
             {
@@ -715,14 +682,14 @@ public class Chunk
         //Xplus
         if (x + 1 <= CONST.chunkSize.x - 1)
         {
-            x_plus = blocks[x + 1, y, z].blockType;
+            x_plus = getBlock(x + 1, y, z);
         }
         else
         {
             key = new int3(arrayBasedChunkPos.x + 1, arrayBasedChunkPos.y, arrayBasedChunkPos.z);
             if (WorldInitializer.chunkArrayContainsKey(key))
             {
-                x_plus = WorldInitializer.chunkArray[key.x, key.y, key.z].blocks[0, y, z].blockType;
+                x_plus = WorldInitializer.getChunk(key.x, key.y, key.z).getBlock(0, y, z);
             }
             else
             {
@@ -734,14 +701,14 @@ public class Chunk
         //Yminus
         if (y - 1 >= 0)
         {
-            y_minus = blocks[x, y - 1, z].blockType;
+            y_minus = getBlock(x, y - 1, z);
         }
         else
         {
             key = new int3(arrayBasedChunkPos.x, arrayBasedChunkPos.y - 1, arrayBasedChunkPos.z);
             if (WorldInitializer.chunkArrayContainsKey(key))
             {
-                y_minus = WorldInitializer.chunkArray[key.x, key.y, key.z].blocks[x, CONST.chunkSize.y - 1, z].blockType;
+                y_minus = WorldInitializer.getChunk(key.x, key.y, key.z).getBlock(x, CONST.chunkSize.y - 1, z);
             }
             else
             {
@@ -752,14 +719,14 @@ public class Chunk
         //Yplus
         if (y + 1 <= CONST.chunkSize.y - 1)
         {
-            y_plus = blocks[x, y + 1, z].blockType;
+            y_plus = getBlock(x, y + 1, z);
         }
         else
         {
             key = new int3(arrayBasedChunkPos.x, arrayBasedChunkPos.y + 1, arrayBasedChunkPos.z);
             if (WorldInitializer.chunkArrayContainsKey(key))
             {
-                y_plus = WorldInitializer.chunkArray[key.x, key.y, key.z].blocks[x, 0, z].blockType;
+                y_plus = WorldInitializer.getChunk(key.x, key.y, key.z).getBlock(x, 0, z);
             }
             else
             {
@@ -771,14 +738,14 @@ public class Chunk
         //Zminus
         if (z - 1 >= 0)
         {
-            z_minus = blocks[x, y, z - 1].blockType;
+            z_minus = getBlock(x, y, z - 1);
         }
         else
         {
             key = new int3(arrayBasedChunkPos.x, arrayBasedChunkPos.y, arrayBasedChunkPos.z - 1);
             if (WorldInitializer.chunkArrayContainsKey(key))
             {
-                z_minus = WorldInitializer.chunkArray[key.x, key.y, key.z].blocks[x, y, CONST.chunkSize.z - 1].blockType;
+                z_minus = WorldInitializer.getChunk(key.x, key.y, key.z).getBlock(x, y, CONST.chunkSize.z - 1);
             }
             else
             {
@@ -789,14 +756,14 @@ public class Chunk
         //Zplus
         if (z + 1 <= CONST.chunkSize.z - 1)
         {
-            z_plus = blocks[x, y, z + 1].blockType;
+            z_plus = getBlock(x, y, z + 1);
         }
         else
         {
             key = new int3(arrayBasedChunkPos.x, arrayBasedChunkPos.y, arrayBasedChunkPos.z + 1);
             if (WorldInitializer.chunkArrayContainsKey(key))
             {
-                z_plus = WorldInitializer.chunkArray[key.x, key.y, key.z].blocks[x, y, 0].blockType;
+                z_plus = WorldInitializer.getChunk(key.x, key.y, key.z).getBlock(x, y, 0);
             }
             else
             {

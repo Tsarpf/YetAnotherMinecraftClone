@@ -5,7 +5,21 @@ using System.Collections.Generic;
 
 public class WorldInitializer : MonoBehaviour
 {
-    public static Chunk[, ,] chunkArray = new Chunk[CONST.worldChunkCount.x, CONST.worldChunkCount.y, CONST.worldChunkCount.z];
+    public static Chunk[] chunkArray = new Chunk[CONST.worldChunkCount.x * CONST.worldChunkCount.y * CONST.worldChunkCount.z];
+
+    public static Chunk getChunk(int x, int y, int z)
+    {
+        return chunkArray[getChunkIdx(x, y, z)];
+    }
+    public static void setChunk(int x, int y, int z, Chunk chunk)
+    {
+        chunkArray[getChunkIdx(x, y, z)] = chunk;
+    }
+    private static int getChunkIdx(int x, int y, int z)
+    {
+        return x + CONST.worldChunkCount.x * (y + CONST.worldChunkCount.y * z);
+    }
+
     public static Texture2D textureAtlas;
     public Texture2D textureAtlasDes;
     public Rect[] atlasUVsDes;
@@ -26,12 +40,6 @@ public class WorldInitializer : MonoBehaviour
         getChunkDrawData();
         //Get Drawdata and draw dat shit up.
         //Thread everything.
-
-        //GameObject.Find("Hero").transform.position = new Vector3(
-        //    (CONST.chunkSize.x * CONST.worldChunkCount.x) / 2,
-        //    (CONST.chunkSize.y * CONST.worldChunkCount.y) - 50,
-        //    (CONST.chunkSize.z * CONST.worldChunkCount.z) / 2);
-
 	}
 
     private void createUVLookUpTables()
@@ -93,7 +101,7 @@ public class WorldInitializer : MonoBehaviour
             {
                 for (int z = 0; z < CONST.worldChunkCount.z; z++)
                 {
-                    chunkArray[x, y, z] = new Chunk(new int3(x, y, z));
+                    setChunk(x, y, z, new Chunk(new int3(x, y, z)));
                 }
             }
         }
@@ -107,9 +115,9 @@ public class WorldInitializer : MonoBehaviour
             {
                 for (int z = 0; z < CONST.worldChunkCount.z; z++)
                 {
-                    if (chunkArray[x, y, z].anyNonAir)
+                    if (getChunk(x, y, z).anyNonAir)
                     {
-                        chunkArray[x, y, z].AddChunkDrawdataToMeshQueue();
+                        getChunk(x, y, z).AddChunkDrawdataToMeshQueue();
                     }
                 }
             }

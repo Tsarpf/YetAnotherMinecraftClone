@@ -49,13 +49,10 @@
      <Compile Include="Assets\Scripts\CONST.cs" />
      <Compile Include="Assets\Scripts\Chunk.cs" />
      <Compile Include="Assets\Scripts\InfiniteWorld.cs" />
-     <Compile Include="Assets\Scripts\Map Generation\GenericChunkGen.cs" />
      <Compile Include="Assets\Scripts\Map Generation\Noise magic borrowed from wizards\ChunkNoise.cs" />
      <Compile Include="Assets\Scripts\Map Generation\Noise magic borrowed from wizards\NoiseBase.cs" />
      <Compile Include="Assets\Scripts\Map Generation\Noise magic borrowed from wizards\SimplexNoise.cs" />
      <Compile Include="Assets\Scripts\Map Generation\Terragen.cs" />
-     <Compile Include="Assets\Scripts\Map Generation\TerragenV2.cs" />
-     <Compile Include="Assets\Scripts\ObjectCollisionScript.cs" />
      <Compile Include="Assets\Scripts\Rarely edited\Block.cs" />
      <Compile Include="Assets\Scripts\Rarely edited\BlockDrawInfo.cs" />
      <Compile Include="Assets\Scripts\Rarely edited\ChunkDrawData.cs" />
