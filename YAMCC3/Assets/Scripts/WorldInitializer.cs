@@ -107,7 +107,10 @@ public class WorldInitializer : MonoBehaviour
             {
                 for (int z = 0; z < CONST.worldChunkCount.z; z++)
                 {
-                    chunkArray[x, y, z].AddChunkDrawdataToMeshQueue();
+                    if (chunkArray[x, y, z].anyNonAir)
+                    {
+                        chunkArray[x, y, z].AddChunkDrawdataToMeshQueue();
+                    }
                 }
             }
         }

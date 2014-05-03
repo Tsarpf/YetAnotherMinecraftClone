@@ -7,7 +7,7 @@ public class UpdateLoop : MonoBehaviour
 
 
     Vector3 playerStartPos;
-    bool initLoadDone = true;
+    public static bool initLoadDone = false;
 
     void Start()
     {
@@ -31,34 +31,12 @@ public class UpdateLoop : MonoBehaviour
     */
     void Update()
     {
-        
-
         checkForMeshes();
-        //playerBlockPosWorld = getPlayerBlockPosWorld();
-
-
-
-
-
-
-
-        /*
-        if (Input.GetButtonDown("Jump"))
-        {
-            initLoadDone = true;
-        }
-        */
-        //if (initLoadDone)
-        //{
-        //    //InfiniteWorld.enabled = true;
-        //}
     }
 
-
-
+    static int counter = 0;
     private void checkForMeshes()
     {
-        
         if (!initLoadDone)
         {
             for (ChunkDrawDataArray chunkdrawdata = MeshGenerationQueue.GetFromQueue(); chunkdrawdata != null; chunkdrawdata = MeshGenerationQueue.GetFromQueue())
@@ -68,10 +46,20 @@ public class UpdateLoop : MonoBehaviour
                 chunkdrawdata.chunk.updateMesh(chunkdrawdata.vertexList, chunkdrawdata.UVList, chunkdrawdata.triangleList);
             }
             checkForDestroys();
+            initLoadDone = true;
         }
          
         if (initLoadDone)
         {
+            if(counter < CONST.framesBetweenMeshes)
+            {
+                counter++;
+                return;
+            }
+            else
+            {
+                counter = 0;
+            }
             ChunkDrawDataArray chunkdrawdata = MeshGenerationQueue.GetFromQueue();
             if (chunkdrawdata != null)
             {
@@ -102,7 +90,6 @@ public class UpdateLoop : MonoBehaviour
             }
         }
     }
-
     private static void checkForDestroys()
     {
         /*

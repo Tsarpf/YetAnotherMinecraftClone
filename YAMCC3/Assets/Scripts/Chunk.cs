@@ -21,6 +21,8 @@ public class Chunk
 
     MeshCollider meshCollider;
 
+    public bool anyNonAir = false;
+
     public static Dictionary<int, Dictionary<BlockType, Vector2>> UVLookUp;
 
     bool firstRun = true;
@@ -833,7 +835,7 @@ public class Chunk
 
 
             chunk.renderer.material.mainTexture = WorldInitializer.textureAtlas;
-
+            chunk.renderer.material.shader = shader;
             
             chunk.AddComponent("MeshCollider");
 			meshCollider = chunk.GetComponent<MeshCollider>();
@@ -859,5 +861,5 @@ public class Chunk
             meshCollider.sharedMesh = mesh;
         }
     }
-    //desudesudesudesu
+    static Shader shader = Shader.Find("Unlit/Texture");
 }

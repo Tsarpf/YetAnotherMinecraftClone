@@ -14,7 +14,7 @@ public static class TerraGen
         int chunkZ = chunk.chunkPosWorld.z;
         Block[, ,] blocks = chunk.blocks;
 
-        ChunkNoise noise = new ChunkNoise(seed: 666);
+        ChunkNoise noise = new ChunkNoise(seed: CONST.worldSeed);
 
         // Calculate heightmap
         float[,] heightmap = new float[chunkSizeX, chunkSizeZ];
@@ -72,6 +72,20 @@ public static class TerraGen
         }
 
         chunk.blocks = blocks;
+
+        for(int x = 0; x < chunkSizeX; x++)
+        {
+            for (int y = 0; y < chunkSizeY; y++)
+            {
+                for (int z = 0; z < chunkSizeZ; z++)
+                {
+                    if(blocks[x,y,z].blockType != BlockType.Air)
+                    {
+                        chunk.anyNonAir = true;
+                    }
+                }
+            }
+        }
     }
 
 }
