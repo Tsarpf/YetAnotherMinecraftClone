@@ -1,0 +1,13 @@
+Temp/*
+obj/*
+Temp
+obj
+Temp\
+obj\
+Temp\*
+obj\*
+Library\metadata\*
+Library\metadata
+Library/metadata
+Library/metadata/*
+Library/metadata/

@@ -21,6 +21,8 @@ public class Chunk
 
     MeshCollider meshCollider;
 
+    public static Dictionary<int, Dictionary<BlockType, Vector2>> UVLookUp;
+
     bool firstRun = true;
     //Get the block positions and stuff here. Do not draw them yet though.
     public Chunk(int3 chunkposwrld)
@@ -166,7 +168,7 @@ public class Chunk
         //Profiler.EndSample();
 
         //Profiler.BeginSample("grasscheck");
-        if (firstRun == true)
+        if (firstRun)
         {
             if (blocks[x, y, z].blockType == BlockType.Dirt)
             {
@@ -188,7 +190,7 @@ public class Chunk
         //24 vertices per cube, hence i < 24
         for (int i = 0; i < 24; i++)
         {
-            vertsDrawPos[i] = genericVerts(i) + pos;
+            vertsDrawPos[i] = genericVerts[i] + pos;
         }
         //Profiler.EndSample();
         //Profiler.BeginSample("declaring");
@@ -517,7 +519,7 @@ public class Chunk
         //Return [-1,-1] if all indexes are false;
         return new Vector2(-1, -1);
     }
-
+    /*
     private Vector2[] getUVs(BlockType blockType)
     {
 
@@ -527,203 +529,148 @@ public class Chunk
         //float epsilon = 0.01f;
         //if (blockType != BlockType.Air)
         //{
-        vertsUV[0] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax - 0.01f, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);         // Front
+        vertsUV[0] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);         // Front
         vertsUV[1] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);
-        vertsUV[2] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax - 0.01f, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
+        vertsUV[2] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
         vertsUV[3] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
 
-        vertsUV[4] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax - 0.01f, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);    // Left
+        vertsUV[4] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);    // Left
         vertsUV[5] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);
-        vertsUV[6] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax - 0.01f, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
+        vertsUV[6] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
         vertsUV[7] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
 
-        vertsUV[8] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax - 0.01f, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);    // Right
+        vertsUV[8] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);    // Right
         vertsUV[9] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);
-        vertsUV[10] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax - 0.01f, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
+        vertsUV[10] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
         vertsUV[11] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
 
 
-        vertsUV[12] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].xMin + 0.01f, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].yMin + 0.01f);   // Top
-        vertsUV[13] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].xMax - 0.01f, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].yMin + 0.01f);
-        vertsUV[14] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].xMin + 0.01f, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].yMax - 0.01f);
-        vertsUV[15] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].xMax - 0.01f, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].yMax - 0.01f);
+        vertsUV[12] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].yMin);   // Top
+        vertsUV[13] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].xMax, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].yMin);
+        vertsUV[14] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].yMax);
+        vertsUV[15] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].xMax, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].yMax);
 
 
         vertsUV[16] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Bottom].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Bottom].yMin);   // Bottom
-        vertsUV[17] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Bottom].xMax + 0.01f, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Bottom].yMin);
+        vertsUV[17] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Bottom].xMax, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Bottom].yMin);
         vertsUV[18] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Bottom].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Bottom].yMax);
-        vertsUV[19] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Bottom].xMax + 0.01f, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Bottom].yMax);
+        vertsUV[19] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Bottom].xMax, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Bottom].yMax);
 
-        vertsUV[20] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax - 0.01f, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);   // Back
+        vertsUV[20] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);   // Back
         vertsUV[21] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);
-        vertsUV[22] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax - 0.01f, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
+        vertsUV[22] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
         vertsUV[23] = new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
         // }
         return vertsUV;
     }
+    */
+    /*
+    static Vector2[] UVs = new Vector2[24]
+    {
+        Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax - 0.01f, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax),
+        Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);
+    }
+*/
 
     private Vector2 getUVs(int idx, BlockType blockType)
     {
-        switch(idx)
-        {
-        case 0:      
-            return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax - 0.01f, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);         // Front
-        case 1:
-            return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);
-        case 2:
-            return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax - 0.01f, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
-        case 3:
-            return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
-        case 4:
-            return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax - 0.01f, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);    // Left
-        case 5:
-            return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);
-        case 6:
-            return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax - 0.01f, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
-        case 7:
-            return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
-        case 8:
-            return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax - 0.01f, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);    // Right
-        case 9:
-            return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);
-        case 10:
-            return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax - 0.01f, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
-        case 11:
-            return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
-        case 12:
-            return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].xMin + 0.01f, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].yMin + 0.01f);   // Top
-        case 13:
-            return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].xMax - 0.01f, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].yMin + 0.01f);
-        case 14:
-            return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].xMin + 0.01f, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].yMax - 0.01f);
-        case 15:
-            return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].xMax - 0.01f, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].yMax - 0.01f);
-        case 16:
-            return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Bottom].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Bottom].yMin);   // Bottom
-        case 17:
-            return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Bottom].xMax + 0.01f, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Bottom].yMin);
-        case 18:
-            return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Bottom].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Bottom].yMax);
-        case 19:
-            return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Bottom].xMax + 0.01f, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Bottom].yMax);
-        case 20:
-            return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax - 0.01f, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);   // Back
-        case 21:
-            return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);
-        case 22:
-            return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax - 0.01f, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
-        case 23:
-            return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
-        default:
-            Debug.Log("Fail");
-            return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
-
-
-            }
+        return UVLookUp[idx][blockType];
     }
-
-    private static Vector3[] genericVerts()
-    {
-
-        Vector3[] verts = new Vector3[24];
-        // Front
-        verts[0] = new Vector3(0, 1, 1);
-        verts[1] = new Vector3(1, 1, 1);
-        verts[2] = new Vector3(0, 0, 1);
-        verts[3] = new Vector3(1, 0, 1);
-
-        // Right
-        verts[4] = new Vector3(1, 1, 1);
-        verts[5] = new Vector3(1, 1, 0);
-        verts[6] = new Vector3(1, 0, 1);
-        verts[7] = new Vector3(1, 0, 0);
-
-        // Left
-        verts[8] = new Vector3(0, 1, 0);
-        verts[9] = new Vector3(0, 1, 1);
-        verts[10] = new Vector3(0, 0, 0);
-        verts[11] = new Vector3(0, 0, 1);
-
-        // Top
-        verts[12] = new Vector3(0, 1, 0);
-        verts[13] = new Vector3(1, 1, 0);
-        verts[14] = new Vector3(0, 1, 1);
-        verts[15] = new Vector3(1, 1, 1);
-
-        // Bottom
-        verts[16] = new Vector3(0, 0, 0);
-        verts[17] = new Vector3(1, 0, 0);
-        verts[18] = new Vector3(0, 0, 1);
-        verts[19] = new Vector3(1, 0, 1);
-
-        // Back
-        verts[20] = new Vector3(1, 1, 0);
-        verts[21] = new Vector3(0, 1, 0);
-        verts[22] = new Vector3(1, 0, 0);
-        verts[23] = new Vector3(0, 0, 0);
-
-        return verts;
-    }
-
-    private Vector3 genericVerts(int idx)
+    public static Vector2 getUVsForPreGeneration(int idx, BlockType blockType)
     {
         switch(idx)
         {
-            case 0:
-                return new Vector3(0, 1, 1);
+            case 0:      
+                return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);         // Front
             case 1:
-                return new Vector3(1, 1, 1);
+                return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);
             case 2:
-                return new Vector3(0,0,1);
+                return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
             case 3:
-                return new Vector3(1,0,1);
+                return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
             case 4:
-                return new Vector3(1,1,1);
+                return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);    // Left
             case 5:
-                return new Vector3(1,1,0);
+                return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);
             case 6:
-                return new Vector3(1,0,1);
+                return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
             case 7:
-                return new Vector3(1,0,0);
+                return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
             case 8:
-                return new Vector3(0,1,0);
+                return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);    // Right
             case 9:
-                return new Vector3(0,1,1);
+                return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);
             case 10:
-                return new Vector3(0,0,0);
+                return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
             case 11:
-                return new Vector3(0, 0, 1);
+                return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
             case 12:
-                return new Vector3(0, 1, 0);
+                return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].yMin);   // Top
             case 13:
-                return new Vector3(1, 1, 0);
+                return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].xMax, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].yMin);
             case 14:
-                return new Vector3(0, 1, 1);
+                return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].yMax);
             case 15:
-                return new Vector3(1, 1, 1);
+                return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].xMax, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Top].yMax);
             case 16:
-                return new Vector3(0, 0, 0);
+                return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Bottom].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Bottom].yMin);   // Bottom
             case 17:
-                return new Vector3(1, 0, 0);
+                return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Bottom].xMax, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Bottom].yMin);
             case 18:
-                return new Vector3(0, 0, 1);
+                return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Bottom].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Bottom].yMax);
             case 19:
-                return new Vector3(1, 0, 1);
+                return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Bottom].xMax, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Bottom].yMax);
             case 20:
-                return new Vector3(1, 1, 0);
+                return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);   // Back
             case 21:
-                return new Vector3(0, 1, 0);
+                return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMax);
             case 22:
-                return new Vector3(1, 0, 0);
+                return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMax, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
             case 23:
-                return new Vector3(0, 0, 0);
+                return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
             default:
-                Debug.Log("Sage");
-                return new Vector3(0, 0, 0);
-
-
+                Debug.Log("Fail");
+                return new Vector2(WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].xMin, WorldInitializer.atlasUVs[(int)blockType + (int)BlockSide.Side].yMin);
         }
     }
+    static Vector3[] genericVerts = new Vector3[24]
+        {
+            // Front
+            new Vector3(0, 1, 1),
+            new Vector3(1, 1, 1),
+            new Vector3(0, 0, 1),
+            new Vector3(1, 0, 1),
+
+            
+            new Vector3(1, 1, 1),
+            new Vector3(1, 1, 0),
+            new Vector3(1, 0, 1),
+            new Vector3(1, 0, 0),
+
+            
+            new Vector3(0, 1, 0),
+            new Vector3(0, 1, 1),
+             new Vector3(0, 0, 0),
+             new Vector3(0, 0, 1),
+
+            
+             new Vector3(0, 1, 0),
+             new Vector3(1, 1, 0),
+             new Vector3(0, 1, 1),
+             new Vector3(1, 1, 1),
+
+            
+             new Vector3(0, 0, 0),
+             new Vector3(1, 0, 0),
+             new Vector3(0, 0, 1),
+             new Vector3(1, 0, 1),
+
+            
+             new Vector3(1, 1, 0),
+             new Vector3(0, 1, 0),
+             new Vector3(1, 0, 0),
+             new Vector3(0, 0, 0)
+        };
 
     private BlockType[] getNeighbourBlocks(int x, int y, int z)
     {
@@ -883,12 +830,15 @@ public class Chunk
             chunk.transform.position = new Vector3(chunkPosWorld.x, chunkPosWorld.y, chunkPosWorld.z);
             chunk.AddComponent("MeshFilter");
             chunk.AddComponent("MeshRenderer");
-			//chunk.AddComponent("MeshCollider");
+
 
             chunk.renderer.material.mainTexture = WorldInitializer.textureAtlas;
 
-			//meshCollider = chunk.GetComponent<MeshCollider>();
-			//meshCollider.sharedMesh = mesh;
+            
+            chunk.AddComponent("MeshCollider");
+			meshCollider = chunk.GetComponent<MeshCollider>();
+			meshCollider.sharedMesh = mesh;
+            
 
             meshFilter = chunk.GetComponent<MeshFilter>();
             meshFilter.mesh = mesh;
@@ -898,7 +848,7 @@ public class Chunk
         }
         else
         {
-            //meshCollider.sharedMesh = null;
+            meshCollider.sharedMesh = null;
             Mesh mesh = meshFilter.mesh;
 
             mesh.Clear();
@@ -906,7 +856,7 @@ public class Chunk
             mesh.uv = UVs;
             mesh.triangles = triangles;
             mesh.RecalculateNormals();
-            //meshCollider.sharedMesh = mesh;
+            meshCollider.sharedMesh = mesh;
         }
     }
     //desudesudesudesu

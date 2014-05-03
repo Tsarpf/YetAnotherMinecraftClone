@@ -5,11 +5,11 @@
 	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
 	<ProductVersion>10.0.20506</ProductVersion>
 	<SchemaVersion>2.0</SchemaVersion>
-	<ProjectGuid>{6E943D45-F810-31FB-0DAB-599276DD5D0F}</ProjectGuid>
+	<ProjectGuid>{258EEDA8-0665-58FB-3F23-52575F9523B1}</ProjectGuid>
 	<OutputType>Library</OutputType>
 	<AppDesignerFolder>Properties</AppDesignerFolder>
 	<RootNamespace></RootNamespace>
-	<AssemblyName>Assembly-CSharp</AssemblyName>
+	<AssemblyName>Assembly-CSharp-Editor</AssemblyName>
 	<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
 	<FileAlignment>512</FileAlignment>
 	<BaseDirectory>Assets</BaseDirectory>
@@ -46,35 +46,40 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\CONST.cs" />
-     <Compile Include="Assets\Scripts\Chunk.cs" />
-     <Compile Include="Assets\Scripts\InfiniteWorld.cs" />
-     <Compile Include="Assets\Scripts\Map Generation\GenericChunkGen.cs" />
-     <Compile Include="Assets\Scripts\Map Generation\Noise magic borrowed from wizards\ChunkNoise.cs" />
-     <Compile Include="Assets\Scripts\Map Generation\Noise magic borrowed from wizards\NoiseBase.cs" />
-     <Compile Include="Assets\Scripts\Map Generation\Noise magic borrowed from wizards\SimplexNoise.cs" />
-     <Compile Include="Assets\Scripts\Map Generation\Terragen.cs" />
-     <Compile Include="Assets\Scripts\Map Generation\TerragenV2.cs" />
-     <Compile Include="Assets\Scripts\ObjectCollisionScript.cs" />
-     <Compile Include="Assets\Scripts\Rarely edited\Block.cs" />
-     <Compile Include="Assets\Scripts\Rarely edited\BlockDrawInfo.cs" />
-     <Compile Include="Assets\Scripts\Rarely edited\ChunkDrawData.cs" />
-     <Compile Include="Assets\Scripts\Rarely edited\ChunkDrawDataArray.cs" />
-     <Compile Include="Assets\Scripts\Rarely edited\Int3Struct.cs" />
-     <Compile Include="Assets\Scripts\Rarely edited\MeshGeneration.cs" />
-     <Compile Include="Assets\Scripts\Rarely edited\MeshGenerationQueue.cs" />
-     <Compile Include="Assets\Scripts\Rarely edited\Neighbour.cs" />
-     <Compile Include="Assets\Scripts\Rarely edited\cube.cs" />
-     <Compile Include="Assets\Scripts\UpdateLoop.cs" />
-     <Compile Include="Assets\Scripts\WorldInitializer.cs" />
+     <Compile Include="Assets\Editor\Water (Pro Only)\Water4\GerstnerDisplaceEditor.cs" />
+     <Compile Include="Assets\Editor\Water (Pro Only)\Water4\PlanarReflectionEditor.cs" />
+     <Compile Include="Assets\Editor\Water (Pro Only)\Water4\SpecularLightingEditor.cs" />
+     <Compile Include="Assets\Editor\Water (Pro Only)\Water4\WaterBaseEditor.cs" />
+     <Compile Include="Assets\Editor\Water (Pro Only)\Water4\WaterEditorUtility.cs" />
      <None Include="Assets\Scripts\ToDo.txt" />
      <None Include="Assets\Standard Assets\Skyboxes\_skybox info.txt" />
+ <Reference Include="Assembly-UnityScript-firstpass">
+ <HintPath>Library\ScriptAssemblies\Assembly-UnityScript-firstpass.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEditor.Graphs">
+ <HintPath>C:\Program Files (x86)\Unity\Editor\Data\Managed\UnityEditor.Graphs.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEditor.iOS.Extensions">
+ <HintPath>C:\Program Files (x86)\Unity\Editor\Data\PlaybackEngines\iPhonePlayer\EditorExtensions\UnityEditor.iOS.Extensions.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEditor.WP8.Extensions">
+ <HintPath>C:\Program Files (x86)\Unity\Editor\Data\PlaybackEngines\WP8Support\EditorExtensions\UnityEditor.WP8.Extensions.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEditor.Metro.Extensions">
+ <HintPath>C:\Program Files (x86)\Unity\Editor\Data\PlaybackEngines\MetroSupport\EditorExtensions\UnityEditor.Metro.Extensions.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEditor.BB10.Extensions">
+ <HintPath>C:\Program Files (x86)\Unity\Editor\Data\PlaybackEngines\BB10Player\EditorExtensions\UnityEditor.BB10.Extensions.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEditor.Android.Extensions">
+ <HintPath>C:\Program Files (x86)\Unity\Editor\Data\PlaybackEngines\AndroidPlayer\EditorExtensions\UnityEditor.Android.Extensions.dll</HintPath>
+ </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="Assembly-CSharp-firstpass.csproj">
-      <Project>{81B096C6-91F2-F9D4-0B3C-2B36F22B1C47}</Project>      <Name>Assembly-CSharp-firstpass</Name>    </ProjectReference>
-    <ProjectReference Include="Assembly-UnityScript-firstpass.unityproj">
-      <Project>{EBB2E8D1-44D4-4B3F-C50C-C1081BCE8D0A}</Project>      <Name>Assembly-UnityScript-firstpass</Name>    </ProjectReference>
+    <ProjectReference Include="Assembly-CSharp-firstpass-vs.csproj">
+      <Project>{81B096C6-91F2-F9D4-0B3C-2B36F22B1C47}</Project>      <Name>Assembly-CSharp-firstpass-vs</Name>    </ProjectReference>
+    <ProjectReference Include="Assembly-CSharp-vs.csproj">
+      <Project>{6E943D45-F810-31FB-0DAB-599276DD5D0F}</Project>      <Name>Assembly-CSharp-vs</Name>    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
