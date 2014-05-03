@@ -14,7 +14,7 @@ public static class TerraGen
         int chunkZ = chunk.chunkPosWorld.z;
         Block[, ,] blocks = chunk.blocks;
 
-        ChunkNoise noise = new ChunkNoise(seed: 54321);
+        ChunkNoise noise = new ChunkNoise(seed: 666);
 
         // Calculate heightmap
         float[,] heightmap = new float[chunkSizeX, chunkSizeZ];
@@ -28,15 +28,14 @@ public static class TerraGen
                 
                 // Create ground
                 int height = Mathf.RoundToInt((CONST.worldDepthBlocks / 4) + heightmap[localX, localZ]);
+                /*
                 for (int y = 0; y < chunkSizeY; y++)
                 {
 
                     int blockWorldY = (int)chunk.blockOffset.y + y;
-                    if (blockWorldY < height)
-                    {
-                        blocks[localX, y, localZ].blockType = BlockType.Stone;
-                    }
+
                 }
+                */
                 
                 // Create mountains
                 int worldX = (int)chunk.blockOffset.x + localX;
@@ -46,8 +45,16 @@ public static class TerraGen
                 {
                     int blockWorldY = (int)chunk.blockOffset.y + y;
 
+                    if (blockWorldY < height - 3)
+                    {
+                        blocks[localX, y, localZ].blockType = BlockType.Air;
+                    }
+                    else if (blockWorldY < height)
+                    {
+                        blocks[localX, y, localZ].blockType = BlockType.Stone;
+                    }
                     //if (blockWorldY >= height && blockWorldY < WorldGameObject.worldDepthBlocks)
-                    if (blockWorldY >= height)
+                    else if (blockWorldY >= height)
                     {
                         float noiseValue3D = noise.GetValue3D(worldX, blockWorldY, worldZ, octaves: 6, startFrequency: .05f, startAmplitude: 1);
                         if (noiseValue3D < -0.3)

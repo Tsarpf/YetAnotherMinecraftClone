@@ -162,7 +162,7 @@ public class Chunk
 
     private BlockDrawInfo getBlockDrawData(int x, int y, int z)
     {
-        //Profiler.BeginSample("AAAAAAAAAAAAAABBBBBCCCCCCCC");
+        Profiler.BeginSample("AAAAAAAAAAAAAABBBBBCCCCCCCC");
         //Profiler.BeginSample("Neighbours");
         BlockType[] neighbours = getNeighbourBlocks(x,y,z);
         //Profiler.EndSample();

@@ -4,11 +4,10 @@ using System.Collections;
 public class UpdateLoop : MonoBehaviour
 {
     public static Vector3 playerBlockPosWorld;
-    public static Vector3 playerChunkPos;
+
 
     Vector3 playerStartPos;
-    public GameObject player;
-    bool initLoadDone = false;
+    bool initLoadDone = true;
 
     void Start()
     {
@@ -16,58 +15,47 @@ public class UpdateLoop : MonoBehaviour
             (CONST.chunkSize.x * CONST.worldChunkCount.x) / 2,
             (CONST.chunkSize.y * CONST.worldChunkCount.y) / 2 + 1,
             (CONST.chunkSize.z * CONST.worldChunkCount.z) / 2);
-    }
 
+
+    }
+    /*
+    void OnDrawGizmos()
+    {
+        Gizmos.DrawCube(new Vector3((playerChunkPosOld.x * CONST.chunkSize.x + CONST.chunkSize.x / 2),
+                                    (playerChunkPosOld.y * CONST.chunkSize.y + CONST.chunkSize.y / 2),
+                                    (playerChunkPosOld.z * CONST.chunkSize.z + CONST.chunkSize.z / 2)),
+               new Vector3(CONST.chunkSize.x,
+                           CONST.chunkSize.y,
+                           CONST.chunkSize.z));
+    }
+    */
     void Update()
     {
-        checkForMeshes();
-        playerBlockPosWorld = getPlayerBlockPosWorld();
-        playerChunkPos = getPlayerChunkPos();
+        
 
+        checkForMeshes();
+        //playerBlockPosWorld = getPlayerBlockPosWorld();
+
+
+
+
+
+
+
+        /*
         if (Input.GetButtonDown("Jump"))
         {
             initLoadDone = true;
         }
-
-        if (!initLoadDone)
-        {
-            player.transform.position = playerStartPos;
-        }
-        if (initLoadDone)
-        {
-            InfiniteWorld.enabled = true;
-        }
-    }
-    private Vector3 getPlayerChunkPos()
-    {
-        Vector3 playerPos = player.transform.position;
-
-        int x = Mathf.CeilToInt(playerPos.x) - 1;
-        int y = Mathf.CeilToInt(playerPos.y) - 1;
-        int z = Mathf.CeilToInt(playerPos.z) - 1;
-
-        x = x / CONST.chunkSize.x;
-        y = y / CONST.chunkSize.y;
-        z = z / CONST.chunkSize.z;
-
-        //int3 offset = ChunkRowUtils.ChunkWorldPositionOffset;
-
-        return new Vector3(x, y, z);
+        */
+        //if (initLoadDone)
+        //{
+        //    //InfiniteWorld.enabled = true;
+        //}
     }
 
-    private Vector3 getPlayerBlockPosWorld()
-    {
-        int x = Mathf.CeilToInt(player.transform.position.x) - 1;
-        int y = Mathf.CeilToInt(player.transform.position.y) - 1;
-        int z = Mathf.CeilToInt(player.transform.position.z) - 1;
 
-        Vector3 blockCoords = new Vector3();
-        blockCoords.x = x;
-        blockCoords.y = y;
-        blockCoords.z = z;
 
-        return blockCoords;
-    }
     private void checkForMeshes()
     {
         
