@@ -26,18 +26,32 @@ public class WorldInitializer : MonoBehaviour
     public static Rect[] atlasUVs;
 	void Start ()
     {
+
+        Profiler.BeginSample("Create lookup tables");
         //Debug.Log
         initializeAtlas();
         createUVLookUpTables();
+        Profiler.EndSample();
 	    //Create uhm... chunks!
         //When the chunks are created they automatically use the terrain generator to set up their block array with the correct blocktypes.
+        DateTime startTime = DateTime.Now;
+        Profiler.BeginSample("Create chunks");
         createChunks();
-
-
+        Profiler.EndSample();
+        DateTime end = DateTime.Now;
+        TimeSpan generationTime = end - startTime;
+        Debug.Log(generationTime);
         //Check neighbours etc and prepare blocks for drawing.
         //We cannot do this in the same loop as the initialization, because all chunks have to be finished and their blocks generated before
         //we start to check blocks neighbours because the neighbours could be in unintialized neighbourchunks. Cheers.
+        startTime = DateTime.Now;
+
+        Profiler.BeginSample("get chunk datda");
         getChunkDrawData();
+        Profiler.EndSample();
+        end = DateTime.Now;
+        generationTime = end - startTime;
+        Debug.Log(generationTime);
         //Get Drawdata and draw dat shit up.
         //Thread everything.
 	}
@@ -124,13 +138,13 @@ public class WorldInitializer : MonoBehaviour
         }
     }
 
-    public static bool chunkArrayContainsKey(int3 key)
+    public static bool chunkArrayContainsKey(int x, int y, int z)
     {
-        if (key.x >= CONST.worldChunkCount.x || key.y >= CONST.worldChunkCount.y || key.z >= CONST.worldChunkCount.z)
+        if (x >= CONST.worldChunkCount.x || y >= CONST.worldChunkCount.y || z >= CONST.worldChunkCount.z)
         {
             return false;
         }
-        if (key.x < 0 || key.y < 0 || key.z < 0)
+        if (x < 0 || y < 0 || z < 0)
         {
             return false;
         }

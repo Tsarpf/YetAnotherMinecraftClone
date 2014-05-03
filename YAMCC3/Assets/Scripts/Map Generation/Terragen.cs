@@ -18,7 +18,7 @@ public static class TerraGen
 
         // Calculate heightmap
         float[,] heightmap = new float[chunkSizeX, chunkSizeZ];
-        noise.FillMap2D(heightmap, chunkX, chunkZ, octaves: 5, startFrequency: .03f, startAmplitude: 5);
+        noise.FillMap2D(heightmap, chunkX, chunkZ, octaves: 1, startFrequency: .03f, startAmplitude: 5);
 
         // Fill chunk with blocks
         for (int localX = 0; localX < CONST.chunkSize.x; localX++)
@@ -58,7 +58,7 @@ public static class TerraGen
                     //if (blockWorldY >= height && blockWorldY < WorldGameObject.worldDepthBlocks)
                     else if (blockWorldY >= height)
                     {
-                        float noiseValue3D = noise.GetValue3D(worldX, blockWorldY, worldZ, octaves: 6, startFrequency: .05f, startAmplitude: 1);
+                        float noiseValue3D = noise.GetValue3D(worldX, blockWorldY, worldZ, octaves: 1, startFrequency: .05f, startAmplitude: 2);
                         if (noiseValue3D < -0.3)
                         {
                             //blocks[localX, y, localZ].blockType = BlockType.Dirt;
@@ -78,7 +78,7 @@ public static class TerraGen
         }
 
         //chunk.blocks = blocks;
-        
+        /*
         for(int x = 0; x < chunkSizeX; x++)
         {
             for (int y = 0; y < chunkSizeY; y++)
@@ -92,6 +92,7 @@ public static class TerraGen
                 }
             }
         }
+        */
         
     }
 

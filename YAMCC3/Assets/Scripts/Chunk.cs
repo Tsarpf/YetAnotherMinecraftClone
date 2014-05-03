@@ -21,7 +21,7 @@ public class Chunk
 
     MeshCollider meshCollider;
 
-    public bool anyNonAir = false;
+    public bool anyNonAir = true;
 
     public static Dictionary<int, Dictionary<BlockType, Vector2>> UVLookUp;
 
@@ -85,7 +85,8 @@ public class Chunk
         //GenericChunkGen.GenerateChunk(this);
         TerraGen.CreateLandscape(this);
     }
-    
+    static int totalVertexAndUVCount = CONST.chunkSize.x * CONST.chunkSize.y * CONST.chunkSize.z * 24;
+    static int totalTriangleCount = CONST.chunkSize.x * CONST.chunkSize.y * CONST.chunkSize.z * 36;
     public void AddChunkDrawdataToMeshQueue(System.Object stateInfo)
     {
         int3 chunkSize = CONST.chunkSize;
@@ -103,20 +104,18 @@ public class Chunk
                 {
                     if (getBlock(x, y, z) != BlockType.Air)
                     {
-
-
-                        drawData = getBlockDrawData(x, y, z);
+                        drawData = getBlockDrawData(x, y, z, offset);
 
                         chunkDrawData.vertexList.AddRange(drawData.blockVertexList);
                         chunkDrawData.UVList.AddRange(drawData.blockUVList);
-
+                        /*
                         int j = 0;
                         foreach (int val in drawData.blockTriangleList)
                         {
                             drawData.blockTriangleList[j] = val + offset;
                             j++;
                         }
-
+                        */
                         offset += drawData.triangleCount;
 
                         chunkDrawData.triangleList.AddRange(drawData.blockTriangleList);
@@ -151,17 +150,19 @@ public class Chunk
                     {
 
 
-                        drawData = getBlockDrawData(x, y, z);
+                        drawData = getBlockDrawData(x, y, z, offset);
 
                         chunkDrawData.vertexList.AddRange(drawData.blockVertexList);
                         chunkDrawData.UVList.AddRange(drawData.blockUVList);
 
+                        /*
                         int j = 0;
                         foreach (int val in drawData.blockTriangleList)
                         {
                             drawData.blockTriangleList[j] = val + offset;
                             j++;
                         }
+                        */
 
                         offset += drawData.triangleCount;
 
@@ -178,7 +179,7 @@ public class Chunk
 
     }
 
-    private BlockDrawInfo getBlockDrawData(int x, int y, int z)
+    private BlockDrawInfo getBlockDrawData(int x, int y, int z, int offset)
     {
         //Profiler.BeginSample("AAAAAAAAAAAAAABBBBBCCCCCCCC");
         //Profiler.BeginSample("Neighbours");
@@ -204,13 +205,15 @@ public class Chunk
         //Profiler.EndSample();
 
         //Profiler.BeginSample("vertsdrawpos");
-        Vector3[] vertsDrawPos = new Vector3[24];
+        //Vector3[] vertsDrawPos = new Vector3[24];
         Vector3 pos = new Vector3(x + blockOffset.x, y + blockOffset.y, z + blockOffset.z);
         //24 vertices per cube, hence i < 24
+        /*
         for (int i = 0; i < 24; i++)
         {
             vertsDrawPos[i] = genericVerts[i] + pos;
         }
+        */
         //Profiler.EndSample();
         //Profiler.BeginSample("declaring");
         List<Vector3> blockVertexList = new List<Vector3>();
@@ -248,141 +251,168 @@ public class Chunk
             // Then proceed to checking each face at a time and adding the draw-info accordingly.
             if (neighbours[5] == BlockType.Air) // Front
             {
-                blockVertexList.Add(vertsDrawPos[0]);
-                blockVertexList.Add(vertsDrawPos[1]);
-                blockVertexList.Add(vertsDrawPos[2]);
-                blockVertexList.Add(vertsDrawPos[3]);
+                
+                blockVertexList.Add(genericVerts[0] + pos);
+                blockVertexList.Add(genericVerts[1] + pos);
+                blockVertexList.Add(genericVerts[2] + pos);
+                blockVertexList.Add(genericVerts[3] + pos);
+                //blockVertexList.Add(vertsDrawPos[0]);
+                //blockVertexList.Add(vertsDrawPos[1]);
+                //blockVertexList.Add(vertsDrawPos[2]);
+                //blockVertexList.Add(vertsDrawPos[3]);
+                
 
-                blockUVList.Add(getUVs(0,current));
-                blockUVList.Add(getUVs(1,current));
-                blockUVList.Add(getUVs(2,current));
-                blockUVList.Add(getUVs(3,current));
+                blockUVList.Add(UVLookUp[0][current]);
+                blockUVList.Add(UVLookUp[1][current]);
+                blockUVList.Add(UVLookUp[2][current]);
+                blockUVList.Add(UVLookUp[3][current]);
 
-                blockTriangleList.Add(3 + triangleIndex);
-                blockTriangleList.Add(1 + triangleIndex);
-                blockTriangleList.Add(0 + triangleIndex);
 
-                blockTriangleList.Add(0 + triangleIndex);
-                blockTriangleList.Add(2 + triangleIndex);
-                blockTriangleList.Add(3 + triangleIndex);
+                blockTriangleList.Add(3 + triangleIndex + offset);
+                blockTriangleList.Add(1 + triangleIndex + offset);
+                blockTriangleList.Add(0 + triangleIndex + offset);
+
+                blockTriangleList.Add(0 + triangleIndex + offset);
+                blockTriangleList.Add(2 + triangleIndex + offset);
+                blockTriangleList.Add(3 + triangleIndex + offset);
 
                 triangleIndex += 4;
             }
 
             if (neighbours[4] == BlockType.Air) // Back
             {
-                blockVertexList.Add(vertsDrawPos[20]);
-                blockVertexList.Add(vertsDrawPos[21]);
-                blockVertexList.Add(vertsDrawPos[22]);
-                blockVertexList.Add(vertsDrawPos[23]);
+                //blockVertexList.Add(vertsDrawPos[20]);
+                //blockVertexList.Add(vertsDrawPos[21]);
+                //blockVertexList.Add(vertsDrawPos[22]);
+                //blockVertexList.Add(vertsDrawPos[23]);
+                blockVertexList.Add(genericVerts[20] + pos);
+                blockVertexList.Add(genericVerts[21] + pos);
+                blockVertexList.Add(genericVerts[22] + pos);
+                blockVertexList.Add(genericVerts[23] + pos);
 
-                blockUVList.Add(getUVs(20,current));
-                blockUVList.Add(getUVs(21,current));
-                blockUVList.Add(getUVs(22,current));
-                blockUVList.Add(getUVs(23,current));
+                blockUVList.Add(UVLookUp[20][current]);
+                blockUVList.Add(UVLookUp[21][current]);
+                blockUVList.Add(UVLookUp[22][current]);
+                blockUVList.Add(UVLookUp[23][current]);
 
-                blockTriangleList.Add(3 + triangleIndex);
-                blockTriangleList.Add(1 + triangleIndex);
-                blockTriangleList.Add(0 + triangleIndex);
+                blockTriangleList.Add(3 + triangleIndex + offset);
+                blockTriangleList.Add(1 + triangleIndex + offset);
+                blockTriangleList.Add(0 + triangleIndex + offset);
 
-                blockTriangleList.Add(0 + triangleIndex);
-                blockTriangleList.Add(2 + triangleIndex);
-                blockTriangleList.Add(3 + triangleIndex);
+                blockTriangleList.Add(0 + triangleIndex + offset);
+                blockTriangleList.Add(2 + triangleIndex + offset);
+                blockTriangleList.Add(3 + triangleIndex + offset);
 
                 triangleIndex += 4;
             }
 
             if (neighbours[0] == BlockType.Air) // Left
             {
-                blockVertexList.Add(vertsDrawPos[8]);
-                blockVertexList.Add(vertsDrawPos[9]);
-                blockVertexList.Add(vertsDrawPos[10]);
-                blockVertexList.Add(vertsDrawPos[11]);
+                //blockVertexList.Add(vertsDrawPos[8]);
+                //blockVertexList.Add(vertsDrawPos[9]);
+                //blockVertexList.Add(vertsDrawPos[10]);
+                //blockVertexList.Add(vertsDrawPos[11]);
+                blockVertexList.Add(genericVerts[8] + pos);
+                blockVertexList.Add(genericVerts[9] + pos);
+                blockVertexList.Add(genericVerts[10] + pos);
+                blockVertexList.Add(genericVerts[11] + pos);
 
-                blockUVList.Add(getUVs(8,current));
-                blockUVList.Add(getUVs(9,current));
-                blockUVList.Add(getUVs(10,current));
-                blockUVList.Add(getUVs(11,current));
+                blockUVList.Add(UVLookUp[8][current]);
+                blockUVList.Add(UVLookUp[9][current]);
+                blockUVList.Add(UVLookUp[10][current]);
+                blockUVList.Add(UVLookUp[11][current]);
 
-                blockTriangleList.Add(3 + triangleIndex);
-                blockTriangleList.Add(1 + triangleIndex);
-                blockTriangleList.Add(0 + triangleIndex);
+                blockTriangleList.Add(3 + triangleIndex + offset);
+                blockTriangleList.Add(1 + triangleIndex + offset);
+                blockTriangleList.Add(0 + triangleIndex + offset);
 
-                blockTriangleList.Add(0 + triangleIndex);
-                blockTriangleList.Add(2 + triangleIndex);
-                blockTriangleList.Add(3 + triangleIndex);
+                blockTriangleList.Add(0 + triangleIndex + offset);
+                blockTriangleList.Add(2 + triangleIndex + offset);
+                blockTriangleList.Add(3 + triangleIndex + offset);
 
                 triangleIndex += 4;
             }
 
             if (neighbours[1] == BlockType.Air) // Right
             {
-                blockVertexList.Add(vertsDrawPos[4]);
-                blockVertexList.Add(vertsDrawPos[5]);
-                blockVertexList.Add(vertsDrawPos[6]);
-                blockVertexList.Add(vertsDrawPos[7]);
+                //blockVertexList.Add(vertsDrawPos[4]);
+                //blockVertexList.Add(vertsDrawPos[5]);
+                //blockVertexList.Add(vertsDrawPos[6]);
+                //blockVertexList.Add(vertsDrawPos[7]);
+                blockVertexList.Add(genericVerts[4] + pos);
+                blockVertexList.Add(genericVerts[5] + pos);
+                blockVertexList.Add(genericVerts[6] + pos);
+                blockVertexList.Add(genericVerts[7] + pos);
 
-                blockUVList.Add(getUVs(4,current));
-                blockUVList.Add(getUVs(5,current));
-                blockUVList.Add(getUVs(6,current));
-                blockUVList.Add(getUVs(7,current));
+
+                blockUVList.Add(UVLookUp[4][current]);
+                blockUVList.Add(UVLookUp[5][current]);
+                blockUVList.Add(UVLookUp[6][current]);
+                blockUVList.Add(UVLookUp[7][current]);
 
 
-                blockTriangleList.Add(0 + triangleIndex);
-                blockTriangleList.Add(2 + triangleIndex);
-                blockTriangleList.Add(3 + triangleIndex);
+                blockTriangleList.Add(0 + triangleIndex + offset);
+                blockTriangleList.Add(2 + triangleIndex + offset);
+                blockTriangleList.Add(3 + triangleIndex + offset);
 
-                blockTriangleList.Add(3 + triangleIndex);
-                blockTriangleList.Add(1 + triangleIndex);
-                blockTriangleList.Add(0 + triangleIndex);
+                blockTriangleList.Add(3 + triangleIndex + offset);
+                blockTriangleList.Add(1 + triangleIndex + offset);
+                blockTriangleList.Add(0 + triangleIndex + offset);
 
                 triangleIndex += 4;
             }
 
             if (neighbours[2] == BlockType.Air) // Bottom
             {
-                blockVertexList.Add(vertsDrawPos[16]);
-                blockVertexList.Add(vertsDrawPos[17]);
-                blockVertexList.Add(vertsDrawPos[18]);
-                blockVertexList.Add(vertsDrawPos[19]);
+                //blockVertexList.Add(vertsDrawPos[16]);
+                //blockVertexList.Add(vertsDrawPos[17]);
+                //blockVertexList.Add(vertsDrawPos[18]);
+                //blockVertexList.Add(vertsDrawPos[19]);
+                blockVertexList.Add(genericVerts[16] + pos);
+                blockVertexList.Add(genericVerts[17] + pos);
+                blockVertexList.Add(genericVerts[18] + pos);
+                blockVertexList.Add(genericVerts[19] + pos);
 
-                blockUVList.Add(getUVs(16,current));
-                blockUVList.Add(getUVs(17,current));
-                blockUVList.Add(getUVs(18,current));
-                blockUVList.Add(getUVs(19,current));
+                blockUVList.Add(UVLookUp[16][current]);
+                blockUVList.Add(UVLookUp[17][current]);
+                blockUVList.Add(UVLookUp[18][current]);
+                blockUVList.Add(UVLookUp[19][current]);
 
+                blockTriangleList.Add(0 + triangleIndex + offset);
+                blockTriangleList.Add(1 + triangleIndex + offset);
+                blockTriangleList.Add(3 + triangleIndex + offset);
 
-                blockTriangleList.Add(0 + triangleIndex);
-                blockTriangleList.Add(1 + triangleIndex);
-                blockTriangleList.Add(3 + triangleIndex);
-
-                blockTriangleList.Add(3 + triangleIndex);
-                blockTriangleList.Add(2 + triangleIndex);
-                blockTriangleList.Add(0 + triangleIndex);
+                blockTriangleList.Add(3 + triangleIndex + offset);
+                blockTriangleList.Add(2 + triangleIndex + offset);
+                blockTriangleList.Add(0 + triangleIndex + offset);
 
                 triangleIndex += 4;
             }
 
             if (neighbours[3] == BlockType.Air) // Up
             {
-                blockVertexList.Add(vertsDrawPos[12]);
-                blockVertexList.Add(vertsDrawPos[13]);
-                blockVertexList.Add(vertsDrawPos[14]);
-                blockVertexList.Add(vertsDrawPos[15]);
+                //blockVertexList.Add(vertsDrawPos[12]);
+                //blockVertexList.Add(vertsDrawPos[13]);
+                //blockVertexList.Add(vertsDrawPos[14]);
+                //blockVertexList.Add(vertsDrawPos[15]);
+                blockVertexList.Add(genericVerts[12] + pos);
+                blockVertexList.Add(genericVerts[13] + pos);
+                blockVertexList.Add(genericVerts[14] + pos);
+                blockVertexList.Add(genericVerts[15] + pos);
 
-                blockUVList.Add(getUVs(12,current));
-                blockUVList.Add(getUVs(13,current));
-                blockUVList.Add(getUVs(14,current));
-                blockUVList.Add(getUVs(15,current));
+                blockUVList.Add(UVLookUp[12][current]);
+                blockUVList.Add(UVLookUp[13][current]);
+                blockUVList.Add(UVLookUp[14][current]);
+                blockUVList.Add(UVLookUp[15][current]);
 
 
-                blockTriangleList.Add(3 + triangleIndex);
-                blockTriangleList.Add(1 + triangleIndex);
-                blockTriangleList.Add(0 + triangleIndex);
+                blockTriangleList.Add(3 + triangleIndex + offset);
+                blockTriangleList.Add(1 + triangleIndex + offset);
+                blockTriangleList.Add(0 + triangleIndex + offset);
 
-                blockTriangleList.Add(0 + triangleIndex);
-                blockTriangleList.Add(2 + triangleIndex);
-                blockTriangleList.Add(3 + triangleIndex);
+                blockTriangleList.Add(0 + triangleIndex + offset);
+                blockTriangleList.Add(2 + triangleIndex + offset);
+                blockTriangleList.Add(3 + triangleIndex + offset);
 
                 triangleIndex += 4;
             }
@@ -540,10 +570,6 @@ public class Chunk
         return new Vector2(-1, -1);
     }
     */
-    private Vector2 getUVs(int idx, BlockType blockType)
-    {
-        return UVLookUp[idx][blockType];
-    }
     public static Vector2 getUVsForPreGeneration(int idx, BlockType blockType)
     {
         switch(idx)
@@ -657,7 +683,7 @@ public class Chunk
         BlockType z_minus;
         BlockType z_plus;
 
-        int3 key;
+        int xKey, yKey, zKey;
 
 
         //Xminus
@@ -668,10 +694,13 @@ public class Chunk
         }
         else
         {
-            key = new int3(arrayBasedChunkPos.x - 1, arrayBasedChunkPos.y, arrayBasedChunkPos.z);
-            if (WorldInitializer.chunkArrayContainsKey(key))
+            //key = new int3(arrayBasedChunkPos.x - 1, arrayBasedChunkPos.y, arrayBasedChunkPos.z);
+            xKey = arrayBasedChunkPos.x - 1;
+            yKey = arrayBasedChunkPos.y;
+            zKey = arrayBasedChunkPos.z;
+            if (WorldInitializer.chunkArrayContainsKey(xKey, yKey, zKey))
             {
-                x_minus = WorldInitializer.getChunk(key.x, key.y, key.z).getBlock(CONST.chunkSize.x - 1, y, z);
+                x_minus = WorldInitializer.getChunk(xKey, yKey, zKey).getBlock(CONST.chunkSize.x - 1, y, z);
             }
             else
             {
@@ -686,10 +715,12 @@ public class Chunk
         }
         else
         {
-            key = new int3(arrayBasedChunkPos.x + 1, arrayBasedChunkPos.y, arrayBasedChunkPos.z);
-            if (WorldInitializer.chunkArrayContainsKey(key))
+            xKey = arrayBasedChunkPos.x + 1;
+            yKey = arrayBasedChunkPos.y;
+            zKey = arrayBasedChunkPos.z;
+            if (WorldInitializer.chunkArrayContainsKey(xKey, yKey, zKey))
             {
-                x_plus = WorldInitializer.getChunk(key.x, key.y, key.z).getBlock(0, y, z);
+                x_plus = WorldInitializer.getChunk(xKey, yKey, zKey).getBlock(0, y, z);
             }
             else
             {
@@ -705,10 +736,12 @@ public class Chunk
         }
         else
         {
-            key = new int3(arrayBasedChunkPos.x, arrayBasedChunkPos.y - 1, arrayBasedChunkPos.z);
-            if (WorldInitializer.chunkArrayContainsKey(key))
+            xKey = arrayBasedChunkPos.x;
+            yKey = arrayBasedChunkPos.y - 1 ;
+            zKey = arrayBasedChunkPos.z;
+            if (WorldInitializer.chunkArrayContainsKey(xKey, yKey, zKey))
             {
-                y_minus = WorldInitializer.getChunk(key.x, key.y, key.z).getBlock(x, CONST.chunkSize.y - 1, z);
+                y_minus = WorldInitializer.getChunk(xKey, yKey, zKey).getBlock(x, CONST.chunkSize.y - 1, z);
             }
             else
             {
@@ -723,10 +756,12 @@ public class Chunk
         }
         else
         {
-            key = new int3(arrayBasedChunkPos.x, arrayBasedChunkPos.y + 1, arrayBasedChunkPos.z);
-            if (WorldInitializer.chunkArrayContainsKey(key))
+            xKey = arrayBasedChunkPos.x;
+            yKey = arrayBasedChunkPos.y + 1;
+            zKey = arrayBasedChunkPos.z;
+            if (WorldInitializer.chunkArrayContainsKey(xKey, yKey, zKey))
             {
-                y_plus = WorldInitializer.getChunk(key.x, key.y, key.z).getBlock(x, 0, z);
+                y_plus = WorldInitializer.getChunk(xKey, yKey, zKey).getBlock(x, 0, z);
             }
             else
             {
@@ -742,10 +777,12 @@ public class Chunk
         }
         else
         {
-            key = new int3(arrayBasedChunkPos.x, arrayBasedChunkPos.y, arrayBasedChunkPos.z - 1);
-            if (WorldInitializer.chunkArrayContainsKey(key))
+            xKey = arrayBasedChunkPos.x;
+            yKey = arrayBasedChunkPos.y;
+            zKey = arrayBasedChunkPos.z - 1;
+            if (WorldInitializer.chunkArrayContainsKey(xKey, yKey, zKey))
             {
-                z_minus = WorldInitializer.getChunk(key.x, key.y, key.z).getBlock(x, y, CONST.chunkSize.z - 1);
+                z_minus = WorldInitializer.getChunk(xKey, yKey, zKey).getBlock(x, y, CONST.chunkSize.z - 1);
             }
             else
             {
@@ -760,10 +797,12 @@ public class Chunk
         }
         else
         {
-            key = new int3(arrayBasedChunkPos.x, arrayBasedChunkPos.y, arrayBasedChunkPos.z + 1);
-            if (WorldInitializer.chunkArrayContainsKey(key))
+            xKey = arrayBasedChunkPos.x;
+            yKey = arrayBasedChunkPos.y;
+            zKey = arrayBasedChunkPos.z + 1;
+            if (WorldInitializer.chunkArrayContainsKey(xKey, yKey, zKey))
             {
-                z_plus = WorldInitializer.getChunk(key.x, key.y, key.z).getBlock(x, y, 0);
+                z_plus = WorldInitializer.getChunk(xKey, yKey, zKey).getBlock(x, y, 0);
             }
             else
             {
@@ -812,7 +851,7 @@ public class Chunk
             meshFilter = chunk.GetComponent<MeshFilter>();
             meshFilter.mesh = mesh;
             meshFilter.mesh.RecalculateNormals();
-            //meshFilter.mesh.RecalculateBounds();
+            meshFilter.mesh.RecalculateBounds();
             firstRun = false;
         }
         else

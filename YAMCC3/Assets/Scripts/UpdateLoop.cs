@@ -5,19 +5,11 @@ using System;
 public class UpdateLoop : MonoBehaviour
 {
     public static Vector3 playerBlockPosWorld;
-
-
-    Vector3 playerStartPos;
     public static bool initLoadDone = false;
     DateTime startTime;
 
     void Start()
     {
-        playerStartPos  = new Vector3(
-            (CONST.chunkSize.x * CONST.worldChunkCount.x) / 2,
-            (CONST.chunkSize.y * CONST.worldChunkCount.y) / 2 + 1,
-            (CONST.chunkSize.z * CONST.worldChunkCount.z) / 2);
-
         startTime = DateTime.Now;
     }
     /*
@@ -49,13 +41,13 @@ public class UpdateLoop : MonoBehaviour
             }
             checkForDestroys();
             initLoadDone = true;
-            DateTime end = DateTime.Now;
-            TimeSpan generationTime = end - startTime;
-            Debug.Log(generationTime);
         }
          
         if (initLoadDone)
         {
+            //DateTime end = DateTime.Now;
+            //TimeSpan generationTime = end - startTime;
+            //Debug.Log(generationTime);
             /*
             if(counter < CONST.framesBetweenMeshes)
             {
@@ -67,36 +59,29 @@ public class UpdateLoop : MonoBehaviour
                 counter = 0;
             }
             */
-            ChunkDrawDataArray chunkdrawdata = MeshGenerationQueue.GetFromQueue();
-            if (chunkdrawdata != null)
+
+            for (int i = 0; i < meshesPerFrame; i++)
             {
-                /*
-                int3 offset = ScrollWorldAroundObject.ChunkWorldPositionOffset;
-                //int3 key = new int3(chunkdrawdata.chunkPos.x, chunkdrawdata.chunkPos.y, chunkdrawdata.chunkPos.z);
-                int3 key = new int3(chunkdrawdata.chunkPos.x - offset.x, chunkdrawdata.chunkPos.y - offset.y, chunkdrawdata.chunkPos.z - offset.z);
-
-                if (key.x < 0) key.x = 0;
-                if (key.y < 0) key.y = 0;
-                if (key.z < 0) key.z = 0;
-
-                if (key.x > CONST.worldChunkCount.x - 1) { key.x = CONST.worldChunkCount.x - 1; }
-                if (key.y > CONST.worldChunkCount.y - 1) { key.y = CONST.worldChunkCount.y - 1; }
-                if (key.z > CONST.worldChunkCount.z - 1) { key.z = CONST.worldChunkCount.z - 1; }
-                */
-                //lock (WorldGameObject.chunks)
-                //{
-                //Debug.Log(key.x + " " + key.y + " " + key.z);
-                chunkdrawdata.chunk.updateMesh(chunkdrawdata.vertexList,
-                chunkdrawdata.UVList,
-                chunkdrawdata.triangleList);
-                //}
+                ChunkDrawDataArray chunkdrawdata = MeshGenerationQueue.GetFromQueue();
+                if (chunkdrawdata != null)
+                {
+                    chunkdrawdata.chunk.updateMesh(chunkdrawdata.vertexList,
+                    chunkdrawdata.UVList,
+                    chunkdrawdata.triangleList);
+                }
+                else
+                {
+                    break;
+                }
             }
-            else
-            {
+            //else
+            //{
                 checkForDestroys();
-            }
+            //}
         }
     }
+    //static int meshesPerFrame = CONST.worldChunkCount.x / 3;
+    static int meshesPerFrame = 2;
     private static void checkForDestroys()
     {
         /*
@@ -108,7 +93,7 @@ public class UpdateLoop : MonoBehaviour
             if (i >= 1) { break; }
         }
         */
-        
+        /*
         for (Chunk chunk = MeshGeneration.GetFromRemoveQueue(); chunk != null; chunk = MeshGeneration.GetFromRemoveQueue())
         {
 
@@ -117,14 +102,14 @@ public class UpdateLoop : MonoBehaviour
                 Destroy(chunk.chunk);
             }
         }
+        */
         
-        /*
         Chunk chunk = MeshGeneration.GetFromRemoveQueue();
         if (chunk != null)
         {
             Destroy(chunk.chunk);
         }
-        */
+        
         
     }
 
