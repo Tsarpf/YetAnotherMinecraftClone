@@ -65,8 +65,8 @@ public class InfiniteWorld : MonoBehaviour
 
         AddToDirQueue(new int3(dirX, dirY, dirZ));
 
-        //ThreadPool.QueueUserWorkItem(new WaitCallback(shiftOrganizer));
-        shiftOrganizer();
+        ThreadPool.QueueUserWorkItem(new WaitCallback(shiftOrganizer));
+        //shiftOrganizer();
     }
 
     private int3 getPlayerChunkPos()
@@ -100,21 +100,31 @@ public class InfiniteWorld : MonoBehaviour
         return blockCoords;
     }
 
-    /*
+    
     private void shiftOrganizer(System.Object stateInfo)
     {
+
         ThreadPool.SetMinThreads(4, 4);
         ThreadPool.SetMaxThreads(4, 4);
+
+        //Profiler.BeginSample("AAAAAAAAAAAAARRRRRGGGGHHHHH");
+        // do something that takes a lot of time
         int3 dir = GetFromDirQueue();
+        
         //lock (WorldInitializer.chunkArray)
         //{
-            xdirFunction(dir.x, ChunkWorldPositionOffset, WorldInitializer.chunkArray);
-            ydirFunction(dir.y, ChunkWorldPositionOffset, WorldInitializer.chunkArray);
-            zdirFunction(dir.z, ChunkWorldPositionOffset, WorldInitializer.chunkArray);
+        List<Chunk> chunksToBeDrawn = new List<Chunk>();
+        chunksToBeDrawn.AddRange(xdirFunction(dir.x, ChunkWorldPositionOffset, WorldInitializer.chunkArray));
+        chunksToBeDrawn.AddRange(ydirFunction(dir.y, ChunkWorldPositionOffset, WorldInitializer.chunkArray));
+        chunksToBeDrawn.AddRange(zdirFunction(dir.z, ChunkWorldPositionOffset, WorldInitializer.chunkArray));
+        for(int i = 0; i < chunksToBeDrawn.Count; i++)
+        {
+            chunksToBeDrawn[i].AddChunkDrawdataToMeshQueue();
+        }
         //}
-        
+        //Profiler.EndSample();
     }
-    */
+    /*
     private void shiftOrganizer()
     {
 
@@ -140,7 +150,7 @@ public class InfiniteWorld : MonoBehaviour
         //Profiler.EndSample();
 
     }
-
+    */
     private static List<Chunk> xdirFunction(int xdir, int3 offset, Chunk[, ,] chunks)
     {
         List<Chunk> chunksToBeDrawn = new List<Chunk>();
