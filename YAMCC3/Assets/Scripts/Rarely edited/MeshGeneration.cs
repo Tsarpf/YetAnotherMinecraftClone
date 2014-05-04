@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class MeshGeneration
+public static class MeshGeneration
 {
 
 
@@ -34,23 +34,13 @@ public class MeshGeneration
         return chunkdrawdata;
     }
 
-// LE RIBUL XF:D:DSFGSD
-
-
-    
-// LE RIBUL XF:D:DSFGSD
-
-// LE RIBUL XF:D:DSFGSD
-
-// LE RIBUL XF:D:DSFGSD
-
-
-        public static Queue qRemoveChunk = new Queue(32);
+    public static Queue qRemoveChunk = new Queue(32);
     public static void AddToRemoveQueue(Chunk chunk)
     {
+        //Debug.Log("ses");
         //lock (qRemoveChunk)
         //{
-            qRemoveChunk.Enqueue(chunk);
+        qRemoveChunk.Enqueue(chunk);
         //}
     }
 

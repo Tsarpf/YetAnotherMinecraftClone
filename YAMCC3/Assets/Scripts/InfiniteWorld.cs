@@ -76,8 +76,8 @@ public class InfiniteWorld : MonoBehaviour
 
         AddToDirQueue(new int3(dirX, dirY, dirZ));
 
-        //ThreadPool.QueueUserWorkItem(new WaitCallback(shiftOrganizer));
-        shiftOrganizer();
+        ThreadPool.QueueUserWorkItem(new WaitCallback(shiftOrganizer));
+        //shiftOrganizer();
     }
 
     private int3 getPlayerChunkPos()

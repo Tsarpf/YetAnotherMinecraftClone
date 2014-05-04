@@ -46,13 +46,22 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Editor\Water (Pro Only)\Water4\GerstnerDisplaceEditor.cs" />
-     <Compile Include="Assets\Editor\Water (Pro Only)\Water4\PlanarReflectionEditor.cs" />
-     <Compile Include="Assets\Editor\Water (Pro Only)\Water4\SpecularLightingEditor.cs" />
-     <Compile Include="Assets\Editor\Water (Pro Only)\Water4\WaterBaseEditor.cs" />
-     <Compile Include="Assets\Editor\Water (Pro Only)\Water4\WaterEditorUtility.cs" />
+     <Compile Include="Assets\OVR\Editor\OVRBuild.cs" />
+     <Compile Include="Assets\OVR\Editor\OVRCameraControllerEditor.cs" />
+     <Compile Include="Assets\OVR\Editor\OVRDeviceEditor.cs" />
+     <Compile Include="Assets\OVR\Editor\OVREditorGUIUtility.cs" />
+     <Compile Include="Assets\OVR\Editor\OVRPlayerControllerEditor.cs" />
+     <Compile Include="Assets\OVR\Editor\OVRPrefabs.cs" />
+     <None Include="Assets\Plugins\donotdelete.txt" />
+     <None Include="Assets\OVR\OVRImageEffects\OVRLensCorrection_Mesh.shader" />
+     <None Include="Assets\OVR\OVRImageEffects\OVRLensCorrection_Mesh_CA.shader" />
      <None Include="Assets\Scripts\ToDo.txt" />
+     <None Include="Assets\OVR\OVRImageEffects\OVRLensCorrection_Mesh_CA_TW.shader" />
+     <None Include="Assets\OVR\Shaders\TextShader3D.shader" />
      <None Include="Assets\Standard Assets\Skyboxes\_skybox info.txt" />
+     <None Include="Assets\OVR\OVRImageEffects\OVRLensCorrection_CA.shader" />
+     <None Include="Assets\OVR\OVRImageEffects\OVRLensCorrection.shader" />
+     <None Include="Assets\OVR\Shaders\OVRGUIShader.shader" />
  <Reference Include="Assembly-UnityScript-firstpass">
  <HintPath>Library\ScriptAssemblies\Assembly-UnityScript-firstpass.dll</HintPath>
  </Reference>

@@ -35,11 +35,10 @@ public class UpdateLoop : MonoBehaviour
         {
             for (ChunkDrawDataArray chunkdrawdata = MeshGenerationQueue.GetFromQueue(); chunkdrawdata != null; chunkdrawdata = MeshGenerationQueue.GetFromQueue())
             {
-                int3 offset = InfiniteWorld.ChunkWorldPositionOffset;
                 //int3 key = new int3(chunkdrawdata.chunkPos.x - offset.x, chunkdrawdata.chunkPos.y - offset.y, chunkdrawdata.chunkPos.z - offset.z);
                 chunkdrawdata.chunk.updateMesh(chunkdrawdata.vertexList, chunkdrawdata.UVList, chunkdrawdata.triangleList);
             }
-            checkForDestroys();
+            //checkForDestroys();
             initLoadDone = true;
         }
          
@@ -76,12 +75,15 @@ public class UpdateLoop : MonoBehaviour
             }
             //else
             //{
-                checkForDestroys();
+                //checkForDestroys();
             //}
         }
     }
-    //static int meshesPerFrame = CONST.worldChunkCount.x / 3;
-    static int meshesPerFrame = 2;
+    static int meshesPerFrame = CONST.worldChunkCount.x;
+    //static int meshesPerFrame = 2;
+
+    static int destroysPerFrame = CONST.worldChunkCount.x / 4;
+    static int unneededDeletes = 0;
     private static void checkForDestroys()
     {
         /*
@@ -93,22 +95,43 @@ public class UpdateLoop : MonoBehaviour
             if (i >= 1) { break; }
         }
         */
-        /*
-        for (Chunk chunk = MeshGeneration.GetFromRemoveQueue(); chunk != null; chunk = MeshGeneration.GetFromRemoveQueue())
-        {
 
-            if (chunk != null)
+        //for (int i = 0; i < destroysPerFrame; i++)
+        //{
+        
+        Chunk chunk;// = MeshGeneration.GetFromRemoveQueue(); //; chunk != null; chunk = MeshGeneration.GetFromRemoveQueue()
+            while ((chunk = MeshGeneration.GetFromRemoveQueue()) != null)
             {
+                if(chunk.chunk == null)
+                {
+                    unneededDeletes++;
+                    Debug.Log("unneeded deletes: " + unneededDeletes);
+                    continue;
+                }
+                //Debug.Log("asdklöfj: " + chunk);
+                //Debug.Log("name: " + chunk.chunk.name);
                 Destroy(chunk.chunk);
+               // //Destroy(chunk.chunk);
+                //chunk = MeshGeneration.GetFromRemoveQueue();
+            }
+        //}
+        
+        /*
+        for (int i = 0; i < destroysPerFrame; i++)
+        {
+            Chunk chunk = MeshGeneration.GetFromRemoveQueue();
+            
+            if (chunk.chunk != null)
+            {
+                Debug.Log("Removing " + chunk);
+                Destroy(chunk.chunk);
+            }
+            else
+            {
+                break;
             }
         }
         */
-        
-        Chunk chunk = MeshGeneration.GetFromRemoveQueue();
-        if (chunk != null)
-        {
-            Destroy(chunk.chunk);
-        }
         
         
     }
