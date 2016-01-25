@@ -1,7 +1,8 @@
 YetAnotherMinecraftClone
 ========================
 
-See Wiki https://github.com/Tsarpf/YetAnotherMinecraftClone/wiki for screenshots.
+One of the first programming projects I ever did. The code is messy and sometimes even bad. Infinite map is bugged. But I got some okay'ish screenshots out of it...
 
+![](http://kuvapilvi.fi/k/YJ6x.png)
 
-From the code point of view almost everything worth looking at is in YAMCC/Scripts.
+![](http://kuvapilvi.fi/k/YJ6s.png)
